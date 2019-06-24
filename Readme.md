@@ -1,7 +1,7 @@
 ## How to use
 ```
 go install ./cmd/terra-oracle
-terra-oracle service --from {name_of_feeder} --fees 1000ukrw --gas 60000 --broadcast-mode block --validator terravaloper1~~~~~~~
+terra-oracle service --from {name_of_feeder} --fees 1000ukrw --gas 60000 --chain-id=columbus-2 --broadcast-mode block --validator terravaloper1~~~~~~~
 ```
 
 This should be executed in an environment with your local  wallet.  
