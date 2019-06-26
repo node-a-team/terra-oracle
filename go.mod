@@ -9,7 +9,7 @@ require (
 	github.com/spf13/viper v1.3.2
 	github.com/tendermint/go-amino v0.14.1
 	github.com/tendermint/tendermint v0.31.5
-	github.com/terra-project/core v0.2.1
+	github.com/terra-project/core v0.2.3
 )
 
 replace github.com/cosmos/cosmos-sdk => github.com/YunSuk-Yeo/cosmos-sdk v0.34.7-terra
