@@ -2,10 +2,11 @@ package price
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"regexp"
 	"time"
-	"net/http"
-	"io/ioutil"
+
 	"github.com/tendermint/tendermint/libs/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,15 +24,15 @@ func (ps *PriceService) usdToKrw(logger log.Logger) {
 			}()
 
 			resp, err := http.Get("https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD")
-			if (err != nil) {
-				logger.Error("Fail to fetch from coinone", err.Error())
+			if err != nil {
+				logger.Error("Fail to fetch from dunamu", err.Error())
 				return
 			}
 			defer func() {
 				resp.Body.Close()
 			}()
 			body, err := ioutil.ReadAll(resp.Body)
-			if (err != nil) {
+			if err != nil {
 				logger.Error("Fail to read body", err.Error())
 				return
 			}
@@ -42,13 +43,13 @@ func (ps *PriceService) usdToKrw(logger log.Logger) {
 			price := re.FindString(str)
 
 			logger.Info(fmt.Sprintf("Recent usd/krw: %s", price))
-			
+
 			decAmount, err := sdk.NewDecFromStr(price)
 			if err != nil {
 				logger.Error("Fail to parse price to Dec", err.Error())
 				return
 			}
-			ps.setPrice("usd/krw", sdk.NewDecCoinFromDec("krw", decAmount))
+			ps.SetPrice("usd/krw", sdk.NewDecCoinFromDec("krw", decAmount))
 		}()
 	}
 }
