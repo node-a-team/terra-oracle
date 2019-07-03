@@ -102,4 +102,33 @@ func TestLimit(t *testing.T) {
 	if !abort {
 		panic("should be aborted")
 	}
+
+	os.changeRateSoftLimit = 0
+	os.changeRateHardLimit = 0
+
+	// Exceed hard limit (greater)
+	ps.SetPrice("luna/krw", sdk.NewDecCoin("krw", sdk.NewInt(40)))
+	abort, err = os.calculatePrice()
+	if err != nil {
+		panic(nil)
+	}
+	if abort {
+		panic(nil)
+	}
+	if !os.lunaPrices["krw"].Amount.Equal(sdk.NewDec(40)) {
+		panic(fmt.Errorf("luna price should be (%s), but (%s)", sdk.NewDec(40).String(), os.lunaPrices["krw"].Amount.String()))
+	}
+
+	// Exceed soft limit (lesser)
+	ps.SetPrice("luna/krw", sdk.NewDecCoin("krw", sdk.NewInt(160)))
+	abort, err = os.calculatePrice()
+	if err != nil {
+		panic(nil)
+	}
+	if abort {
+		panic(nil)
+	}
+	if !os.lunaPrices["krw"].Amount.Equal(sdk.NewDec(160)) {
+		panic(fmt.Errorf("luna price should be (%s), but (%s)", sdk.NewDec(160).String(), os.lunaPrices["krw"].Amount.String()))
+	}
 }
