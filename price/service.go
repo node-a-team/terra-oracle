@@ -9,13 +9,13 @@ import (
 
 type PriceService struct {
 	cmn.BaseService
-	mutex *sync.RWMutex
+	mutex  *sync.RWMutex
 	prices map[string]sdk.DecCoin
 }
 
 func NewPriceService() *PriceService {
 	ps := &PriceService{
-		mutex: new(sync.RWMutex),
+		mutex:  new(sync.RWMutex),
 		prices: make(map[string]sdk.DecCoin),
 	}
 	ps.BaseService = *cmn.NewBaseService(nil, "PriceService", ps)
@@ -27,10 +27,11 @@ func (ps *PriceService) OnStart() error {
 	go ps.coinoneToLuna(ps.Logger.With("market", "luna/krw"))
 	go ps.sdrToKrw(ps.Logger.With("market", "sdr/krw"))
 	go ps.usdToKrw(ps.Logger.With("market", "usd/krw"))
+	go ps.mntToKrw(ps.Logger.With("market", "mnt/krw"))
 	return nil
 }
 
-func (ps *PriceService) GetPrice(market string)sdk.DecCoin {
+func (ps *PriceService) GetPrice(market string) sdk.DecCoin {
 	ps.mutex.RLock()
 	defer func() {
 		ps.mutex.RUnlock()
@@ -38,7 +39,7 @@ func (ps *PriceService) GetPrice(market string)sdk.DecCoin {
 	return ps.prices[market]
 }
 
-func (ps *PriceService) setPrice(market string, coin sdk.DecCoin) {
+func (ps *PriceService) SetPrice(market string, coin sdk.DecCoin) {
 	ps.mutex.Lock()
 	defer func() {
 		ps.mutex.Unlock()

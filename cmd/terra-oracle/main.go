@@ -10,8 +10,8 @@ import (
 
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/log"
 	cmn "github.com/tendermint/tendermint/libs/common"
+	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/terra-project/core/app"
 	"github.com/terra-project/core/types/util"
@@ -23,8 +23,8 @@ import (
 
 	_ "github.com/terra-project/core/client/lcd/statik"
 
-	"github.com/node-a-team/terra-oracle/price"
 	"github.com/node-a-team/terra-oracle/oracle"
+	"github.com/node-a-team/terra-oracle/price"
 )
 
 var (
@@ -101,6 +101,8 @@ func svcCmd(cdc *amino.Codec) *cobra.Command {
 	}
 
 	svcCmd.Flags().String(oracle.FlagValidator, "", "")
+	svcCmd.Flags().Float64(oracle.FlagSoftLimit, 0, "")
+	svcCmd.Flags().Float64(oracle.FlagHardLimit, 0, "")
 
 	svcCmd = client.PostCommands(svcCmd)[0]
 	svcCmd.MarkFlagRequired(client.FlagFrom)
