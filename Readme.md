@@ -5,6 +5,9 @@ And make sure that you include ukrw in minimum gas price in terrad.toml to let u
 
 ## Changelog
 #### v0.0.3-alpha.2
+Save settings in config.toml file.
+For MNT oracle we need the API value of currencylayer. (https://currencylayer.com/product)
+Added recovery procedure if prevote+vote transaction fails.
 
 #### v0.0.3-alpha.1
 VotePeriod = 12 -> VotePeriod = 5.  
