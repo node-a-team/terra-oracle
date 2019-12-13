@@ -1,5 +1,6 @@
 bou.ke/monkey v1.0.1/go.mod h1:FgHuK96Rv2Nlf+0u1OOVDpCMdsWyOFmeeketDHE7LIg=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
@@ -232,6 +233,8 @@ github.com/tendermint/tm-db v0.2.0 h1:rJxgdqn6fIiVJZy4zLpY1qVlyD0TU6vhkT4kEf71TQ
 github.com/tendermint/tm-db v0.2.0/go.mod h1:0cPKWu2Mou3IlxecH+MEUSYc1Ch537alLe6CpFrKzgw=
 github.com/terra-project/core v0.3.0-rc2 h1:ydvMMlJ3B8Dh5Yr+muBxTRvlwiE61rJ0weQVeqD6mIE=
 github.com/terra-project/core v0.3.0-rc2/go.mod h1:L+LFiZVuRt2E3s20aHL4UWjJqqImKIYFO7dnT9JhFM0=
+github.com/terra-project/core v0.3.0 h1:GxTijoVmsDq1Q4bBgm++eKJP+WxK8jCFFtJ0SoZAd94=
+github.com/terra-project/core v0.3.0/go.mod h1:L+LFiZVuRt2E3s20aHL4UWjJqqImKIYFO7dnT9JhFM0=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=

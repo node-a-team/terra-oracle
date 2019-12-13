@@ -11,6 +11,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
 func (ps *PriceService) sdrToKrw(logger log.Logger) {
@@ -21,10 +22,11 @@ func (ps *PriceService) sdrToKrw(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(30 * time.Second)
+				time.Sleep(cfg.Config.Options.Interval * time.Second)
 			}()
 
-			resp, err := http.Get("https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y")
+//			resp, err := http.Get("https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y")
+			resp, err := http.Get(cfg.Config.APIs.SDR.IMF)
 			if err != nil {
 				logger.Error("Fail to fetch from imf", err.Error())
 				return

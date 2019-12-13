@@ -8,10 +8,10 @@ import (
 	operating "os"
 	"time"
 
-	"github.com/spf13/viper"
+//	"github.com/spf13/viper"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/keys"
+//	"github.com/cosmos/cosmos-sdk/client/keys"
 	utils "github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -21,12 +21,13 @@ import (
 	"github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/terra-project/core/x/oracle"
+	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
 const (
-	FlagValidator = "validator"
-	FlagSoftLimit = "change-rate-soft-limit"
-	FlagHardLimit = "change-rate-hard-limit"
+//	FlagValidator = "validator"
+//	FlagSoftLimit = "change-rate-soft-limit"
+//	FlagHardLimit = "change-rate-hard-limit"
 )
 
 func (os *OracleService) init() error {
@@ -37,19 +38,22 @@ func (os *OracleService) init() error {
 	if os.cliCtx.BroadcastMode != "block" {
 		return errors.New("I recommend to use commit broadcast mode")
 	}
-
+/*
 	fromName := os.cliCtx.GetFromName()
 	_passphrase, err := keys.GetPassphrase(fromName)
 	if err != nil {
 		return err
 	}
 	os.passphrase = _passphrase
+*/
 
-	os.changeRateSoftLimit = viper.GetFloat64(FlagSoftLimit)
+	os.passphrase =cfg.Config.Feeder.Password
+
+	os.changeRateSoftLimit = cfg.Config.Options.ChangeRateLimit.Soft
 	if os.changeRateSoftLimit < 0 {
 		return fmt.Errorf("Soft limit should be positive")
 	}
-	os.changeRateHardLimit = viper.GetFloat64(FlagHardLimit)
+	os.changeRateHardLimit = cfg.Config.Options.ChangeRateLimit.Hard
 	if os.changeRateHardLimit < 0 {
 		return fmt.Errorf("Hard limit should be positive")
 	}
@@ -111,6 +115,12 @@ func (os *OracleService) txRoutine() {
 					os.Logger.Error("Fail to send vote msgs#1", err.Error())
 					return
 				}
+
+				if res.Logs[0].Success != true {
+					os.prevoteInited = false
+				}
+
+
 				if tick > res.Height/VotePeriod {
 					os.Logger.Error("Tx couldn't be sent within vote period")
 				}
@@ -138,7 +148,8 @@ func (os *OracleService) txRoutine() {
 
 func (os *OracleService) makePrevoteMsgs(denoms []string) ([]sdk.Msg, error) {
 	feeder := os.cliCtx.GetFromAddress()
-	validator, err := sdk.ValAddressFromBech32(viper.GetString(FlagValidator))
+//	validator, err := sdk.ValAddressFromBech32(viper.GetString(FlagValidator))
+	validator, err := sdk.ValAddressFromBech32(cfg.Config.Validator.OperatorAddr)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid validator: %s", err.Error())
 	}
@@ -173,7 +184,8 @@ func (os *OracleService) makePrevoteMsgs(denoms []string) ([]sdk.Msg, error) {
 
 func (os *OracleService) makeVoteMsgs(denoms []string) ([]sdk.Msg, error) {
 	feeder := os.cliCtx.GetFromAddress()
-	validator, err := sdk.ValAddressFromBech32(viper.GetString(FlagValidator))
+//	validator, err := sdk.ValAddressFromBech32(viper.GetString(FlagValidator))
+	validator, err := sdk.ValAddressFromBech32(cfg.Config.Validator.OperatorAddr)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid validator: %s", err.Error())
 	}

@@ -11,9 +11,12 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
 func (ps *PriceService) mntToKrw(logger log.Logger) {
+
+
 	for {
 		func() {
 			defer func() {
@@ -21,10 +24,11 @@ func (ps *PriceService) mntToKrw(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(30 * time.Second)
+				time.Sleep(cfg.Config.Options.Interval * time.Second)
 			}()
 
-			resp, err := http.Get("https://www.freeforexapi.com/api/live?pairs=USDKRW,USDMNT")
+//			resp, err := http.Get("http://www.apilayer.net/api/live?access_key=f4f5c16e99a0f32baeab5be8ced1cd39")
+			resp, err := http.Get(cfg.Config.APIs.MNT.Currencylayer)
 			if err != nil {
 				logger.Error("Fail to fetch from freeforexapi", err.Error())
 				return
@@ -59,7 +63,7 @@ func (ps *PriceService) mntToKrw(logger log.Logger) {
 
 func getUsdPrice(apiBody string, currency string) float64 {
 
-        re, _ := regexp.Compile("\"USD" +currency +"\":{\"rate\":[0-9.]+")
+	re, _ := regexp.Compile("\"USD" +currency +"\":[0-9.]+")
         str := re.FindString(string(apiBody))
 
         re, _ = regexp.Compile("[0-9.]+")

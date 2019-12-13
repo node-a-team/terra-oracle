@@ -10,6 +10,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
 func (ps *PriceService) usdToKrw(logger log.Logger) {
@@ -23,7 +24,8 @@ func (ps *PriceService) usdToKrw(logger log.Logger) {
 				time.Sleep(30 * time.Second)
 			}()
 
-			resp, err := http.Get("https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD")
+//			resp, err := http.Get("https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD")
+			resp, err := http.Get(cfg.Config.APIs.USD.Dunamu)
 			if err != nil {
 				logger.Error("Fail to fetch from dunamu", err.Error())
 				return

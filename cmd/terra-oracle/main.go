@@ -25,6 +25,8 @@ import (
 
 	"github.com/node-a-team/terra-oracle/oracle"
 	"github.com/node-a-team/terra-oracle/price"
+
+	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
 var (
@@ -37,6 +39,10 @@ func main() {
 
 	// Instantiate the codec for the command line application
 	cdc := app.MakeCodec()
+
+
+	// REad in configuration file for local config.toml
+	cfg.Init()
 
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()
@@ -100,13 +106,13 @@ func svcCmd(cdc *amino.Codec) *cobra.Command {
 		},
 	}
 
-	svcCmd.Flags().String(oracle.FlagValidator, "", "")
-	svcCmd.Flags().Float64(oracle.FlagSoftLimit, 0, "")
-	svcCmd.Flags().Float64(oracle.FlagHardLimit, 0, "")
+//	svcCmd.Flags().String(oracle.FlagValidator, "", "")
+//	svcCmd.Flags().Float64(oracle.FlagSoftLimit, 0, "")
+//	svcCmd.Flags().Float64(oracle.FlagHardLimit, 0, "")
 
 	svcCmd = client.PostCommands(svcCmd)[0]
 	svcCmd.MarkFlagRequired(client.FlagFrom)
-	svcCmd.MarkFlagRequired(oracle.FlagValidator)
+//	svcCmd.MarkFlagRequired(oracle.FlagValidator)
 
 	return svcCmd
 }

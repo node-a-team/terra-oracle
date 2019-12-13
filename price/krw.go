@@ -10,6 +10,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
 type TradeHistory struct {
@@ -31,10 +32,11 @@ func (ps *PriceService) coinoneToLuna(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(5 * time.Second)
+				time.Sleep(cfg.Config.Options.Interval * time.Second)
 			}()
 
-			resp, err := http.Get("https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna")
+//			resp, err := http.Get("https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna")
+			resp, err := http.Get(cfg.Config.APIs.KRW.Coinone)
 			if err != nil {
 				logger.Error("Fail to fetch from coinone", err.Error())
 				return
