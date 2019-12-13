@@ -10,5 +10,3 @@ require (
 	github.com/tendermint/tendermint v0.32.7
 	github.com/terra-project/core v0.3.0
 )
-
-replace github.com/node-a-team/terra-oracle/config => /data_terra/terra/terra-oracle/config
