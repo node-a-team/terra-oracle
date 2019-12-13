@@ -53,10 +53,10 @@ terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --fro
 
 Start service.
 ```sh
-terra-oracle service --from={name_of_feeder} --fees=1500ukrw --gas=130000 --broadcast-mode=block --validator terravaloper1~~ --change-rate-soft-limit=0.25 --change-rate-hard-limit=1.5
+cd terra-oracle 
+terra-oracle service --from={name_of_feeder} --fees=3000ukrw --gas=150000 --broadcast-mode=block
 
 // ex)
 cd terra-oracle 
-
 ./terra-oracle service --from=ORACLE --fees=3000ukrw --gas=150000 --broadcast-mode=block 
 ```
