@@ -235,6 +235,8 @@ github.com/terra-project/core v0.3.0-rc2 h1:ydvMMlJ3B8Dh5Yr+muBxTRvlwiE61rJ0weQV
 github.com/terra-project/core v0.3.0-rc2/go.mod h1:L+LFiZVuRt2E3s20aHL4UWjJqqImKIYFO7dnT9JhFM0=
 github.com/terra-project/core v0.3.0 h1:GxTijoVmsDq1Q4bBgm++eKJP+WxK8jCFFtJ0SoZAd94=
 github.com/terra-project/core v0.3.0/go.mod h1:L+LFiZVuRt2E3s20aHL4UWjJqqImKIYFO7dnT9JhFM0=
+github.com/terra-project/core v0.3.1 h1:ZcJbE578WF8RTCDib8hZTmiVJvhQZZQgd4p+psN5toI=
+github.com/terra-project/core v0.3.1/go.mod h1:L+LFiZVuRt2E3s20aHL4UWjJqqImKIYFO7dnT9JhFM0=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=

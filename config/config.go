@@ -3,7 +3,13 @@ package config
 import (
 	"log"
 	"time"
+
 	"github.com/BurntSushi/toml"
+	"github.com/spf13/viper"
+)
+
+const (
+	ConfigPath = "config"
 )
 
 var (
@@ -57,7 +63,9 @@ func readConfig() configType {
 
         var config configType
 
-        if _, err := toml.DecodeFile("./config.toml", &config); err != nil{
+	path := viper.GetString(ConfigPath)+"/config.toml"
+
+        if _, err := toml.DecodeFile(path, &config); err != nil{
 
                 log.Fatal("Config file is missing: ", config)
         }
