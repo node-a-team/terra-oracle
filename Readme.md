@@ -4,6 +4,11 @@ By default, Tendermint waits 10 seconds for the transaction to be committed. But
 And make sure that you include ukrw in minimum gas price in terrad.toml to let users pay the fee by ukrw.  
 
 ## Changelog
+#### v0.0.3-alpha.2
+Save settings in config.toml file.  
+For MNT oracle we need the API value of currencylayer. (https://currencylayer.com/product)  
+Added recovery procedure if prevote+vote transaction fails.
+
 #### v0.0.3-alpha.1
 VotePeriod = 12 -> VotePeriod = 5.  
 Add MNT Oracle vote.  
@@ -24,8 +29,8 @@ This software used go module for dependency management, so you should locate thi
 Checkout https://github.com/golang/go/wiki/Modules  
 ```bash
 git clone https://github.com/node-a-team/terra-oracle.git
-cd terra-oracle && git checkout v0.0.3-alpha.1
-go install ./cmd/terra-oracle
+cd terra-oracle 
+go build ./cmd/terra-oracle
 ```
 
 Set your basic config for cli.
@@ -34,7 +39,7 @@ terracli config chain-id {chain_id}
 terracli config node {endpoint_of_your_node_rpc}
 
 ex)
-terracli config chain-id soju-0011
+terracli config chain-id columbus-3
 terracli config node tcp://localhost:26657
 ```
 
@@ -48,8 +53,10 @@ terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --fro
 
 Start service.
 ```sh
-terra-oracle service --from={name_of_feeder} --fees=1500ukrw --gas=130000 --broadcast-mode=block --validator terravaloper1~~ --change-rate-soft-limit=0.25 --change-rate-hard-limit=1.5
+cd terra-oracle 
+terra-oracle service --from={name_of_feeder} --fees=3000ukrw --gas=150000 --broadcast-mode=block
 
 // ex)
-terra-oracle service --from=ORACLE --fees=1500ukrw --gas=130000 --broadcast-mode=block --validator=terravaloper1rxawuuuatgwlwj7u59gxw7pnrp4dslgceup2rr --change-rate-soft-limit=0.25 --change-rate-hard-limit=1.5
+cd terra-oracle 
+./terra-oracle service --from=ORACLE --fees=3000ukrw --gas=150000 --broadcast-mode=block 
 ```
