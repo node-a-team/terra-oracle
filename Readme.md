@@ -58,10 +58,10 @@ terracli config node tcp://localhost:26657
 ## Set your feeder.
 
 ```bash
-terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --gas=auto --gas-adjustment=1.25 --fees=3000uluna
+terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --gas=auto --gas-adjustment=1.25
 
 // ex)
-terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --gas=auto --gas-adjustment=1.25 --fees=3000uluna
+terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --gas=auto --gas-adjustment=1.25 
 ```
 
 ## Start terra-oracle service.
