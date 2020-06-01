@@ -4,10 +4,12 @@ By default, Tendermint waits 10 seconds for the transaction to be committed. But
 And make sure that you include ukrw in minimum gas price in terrad.toml to let users pay the fee by ukrw.  
 
 ## Changelog
+#### v0.0.3-alpha.4
+Fix error: "Fail to parse price to int    module=price market=luna/krw"
+
 #### v0.0.3-alpha.3
 Add Command: `terra-oracle version`  
 Add Flag in `Service` command for systemd service: `--config`  
-
 
 #### v0.0.3-alpha.2
 Save settings in config.toml file.  
@@ -76,12 +78,6 @@ terra-oracle service --from=ORACLE --fees=3000ukrw --gas=150000 --broadcast-mode
 ## Use systemd service.
   
 ```sh
-# Make log directory & file
-sudo mkdir /var/log/userLog  
-sudo touch /var/log/userLog/terra-oracle.log  
-# user: terra
-sudo chown terra:terra /var/log/userLog/terra-oracle.log
-
 # $HOME: /data/terra
 # $GOPATH: /data/terra/goApps
 # Path to config.toml: /data/terra/terra-oracle
@@ -99,8 +95,9 @@ ExecStart=/data/terra/goApps/bin/terra-oracle service \
     --gas=150000 \
     --broadcast-mode=block \
     --config="/data/terra/terra-oracle"
-StandardOutput=file:/var/log/userLog/terra-oracle.log
-StandardError=file:/var/log/userLog/terra-oracle.log
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=terra-oracle
 Restart=always
 RestartSec=3
 
@@ -113,5 +110,5 @@ sudo systemctl restart terra-oracle.service
 
 
 ## log
-tail -f /var/log/userLog/terra-oracle.log
+journalctl -f | grep terra-oracle
 ```
