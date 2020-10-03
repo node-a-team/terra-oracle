@@ -3,7 +3,7 @@
 title = "TOML Document"
 
 [Validator]
-operatorAddr = "terravaloper1rxawuuuatgwlwj7u59gxw7pnrp4dslgceup2rr"
+operatorAddr = "terravaloper1062zkmnlqhcpwsryk5kjf345x6njzzksqk9ljl"
 
 [Feeder]
 password = "qwer1234"
@@ -18,14 +18,10 @@ password = "qwer1234"
 	[APIs.mnt]
 	# API key is required
 	# https://currencylayer.com/product
-	currencylayer = "http://www.apilayer.net/api/live?access_key="
+	currencylayer = "http://www.apilayer.net/api/live?access_key=f4f5c16e99a0f32baeab5be8ced1cd39"
 
 	[APIs.sdr]
 	imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
 [Options]
-interval = 30
-
-	[Options.changeRateLimit]
-	soft = 0.25
-	hard = 0.5
+interval = 200

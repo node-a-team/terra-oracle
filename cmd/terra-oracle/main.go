@@ -10,15 +10,16 @@ import (
 
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tenderOS "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/terra-project/core/app"
 	"github.com/terra-project/core/types/util"
 
-	"github.com/cosmos/cosmos-sdk/client"
+//	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
+	flags "github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	_ "github.com/terra-project/core/client/lcd/statik"
@@ -30,7 +31,7 @@ import (
 )
 
 var (
-	version = "v0.0.3-alpha.4"
+	version = "v0.0.4-alpha.1"
 	logger = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 )
 
@@ -54,7 +55,7 @@ func main() {
 	}
 
 	// Add --chain-id to persistent flags and mark it required
-	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
+	rootCmd.PersistentFlags().String(flags.FlagChainID, "", "Chain ID of tendermint node")
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		return initConfig(rootCmd)
 	}
@@ -64,7 +65,7 @@ func main() {
 		rpc.StatusCommand(),
 		svcCmd(cdc),
 		versionCmd(),
-		client.LineBreak,
+		flags.LineBreak,
 		keys.Commands(),
 	)
 
@@ -92,7 +93,7 @@ func svcCmd(cdc *amino.Codec) *cobra.Command {
 			os.SetLogger(logger.With("module", "oracle"))
 
 			// Stop upon receiving SIGTERM or CTRL-C.
-			cmn.TrapSignal(logger, func() {
+			tenderOS.TrapSignal(logger, func() {
 				if os.IsRunning() {
 					os.Stop()
 				}
@@ -117,8 +118,11 @@ func svcCmd(cdc *amino.Codec) *cobra.Command {
 	svcCmd.Flags().String(cfg.ConfigPath, "", "Directory for config.toml")
 	svcCmd.MarkFlagRequired(cfg.ConfigPath)
 
-	svcCmd = client.PostCommands(svcCmd)[0]
-	svcCmd.MarkFlagRequired(client.FlagFrom)
+	svcCmd.Flags().StringP(cfg.VoteMode, "", "aggregate", "Vote mode (singular|aggregate)")
+        svcCmd.MarkFlagRequired(cfg.VoteMode)
+
+	svcCmd = flags.PostCommands(svcCmd)[0]
+	svcCmd.MarkFlagRequired(flags.FlagFrom)
 //	svcCmd.MarkFlagRequired(oracle.FlagValidator)
 
 	return svcCmd
@@ -152,7 +156,7 @@ func initConfig(cmd *cobra.Command) error {
 			return err
 		}
 	}
-	if err := viper.BindPFlag(client.FlagChainID, cmd.PersistentFlags().Lookup(client.FlagChainID)); err != nil {
+	if err := viper.BindPFlag(flags.FlagChainID, cmd.PersistentFlags().Lookup(flags.FlagChainID)); err != nil {
 		return err
 	}
 	if err := viper.BindPFlag(cli.EncodingFlag, cmd.PersistentFlags().Lookup(cli.EncodingFlag)); err != nil {

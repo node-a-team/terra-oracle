@@ -9,7 +9,7 @@ import (
 	"time"
 	"strings"
 
-	"github.com/spf13/viper"
+//	"github.com/spf13/viper"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 //	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -32,7 +32,7 @@ const (
 )
 
 var (
-	voteMode string
+	startSign = 1
 	salt, exchangeRatesStr = []string{"1234", ""}, []string{"", ""}
 )
 
@@ -42,18 +42,11 @@ func (os *OracleService) init() error {
 	ioReader := strings.NewReader(os.passphrase)
 
 	os.txBldr = authtypes.NewTxBuilderFromCLI(ioReader).WithTxEncoder(authtypes.DefaultTxEncoder(os.cdc))
+	os.cliCtx = context.NewCLIContext().
+		WithCodec(os.cdc)
 
-	fmt.Printf("\n\033[31m")
-	os.cliCtx = context.NewCLIContext().WithCodec(os.cdc)
-
-	fmt.Printf("\033[0m")
 	if os.cliCtx.BroadcastMode != "block" {
 		return errors.New("I recommend to use commit broadcast mode")
-	}
-
-	voteMode = viper.GetString(cfg.VoteMode)
-	if voteMode != "singular" && voteMode != "aggregate" {
-		return errors.New("The vote mode must be set to \"singular\" or \"aggregate\"")
 	}
 /*
 	fromName := os.cliCtx.GetFromName()
@@ -66,7 +59,6 @@ func (os *OracleService) init() error {
 
 //	os.passphrase =cfg.Config.Feeder.Password
 
-/*
 	os.changeRateSoftLimit = cfg.Config.Options.ChangeRateLimit.Soft
 	if os.changeRateSoftLimit < 0 {
 		return fmt.Errorf("Soft limit should be positive")
@@ -75,18 +67,16 @@ func (os *OracleService) init() error {
 	if os.changeRateHardLimit < 0 {
 		return fmt.Errorf("Hard limit should be positive")
 	}
-*/
+
 	return nil
 }
 
 func (os *OracleService) txRoutine() {
 	httpClient, _ := client.New(os.cliCtx.NodeURI, "/websocket")
 
-	var voteMsgs []sdk.Msg
 	var latestVoteHeight int64 = 0
 
 	denoms := []string{"krw", "usd", "sdr", "mnt"}
-
 
 	for {
 		func() {
@@ -127,12 +117,8 @@ func (os *OracleService) txRoutine() {
 
 			os.Logger.Info(fmt.Sprintf("Try to send vote msg (including prevote for next vote msg)"))
 
-			if voteMode == "singular" {
-				voteMsgs, err = os.makeSingularVoteMsgs(denoms)
-			} else if voteMode == "aggregate" {
-				voteMsgs, err = os.makeAggregateVoteMsgs(denoms)
-			}
 
+			voteMsgs, err := os.makeAggregateVoteMsgs(denoms)
 			if err != nil {
 				os.Logger.Error("Fail to make vote msgs", err.Error())
 			}
@@ -145,11 +131,6 @@ func (os *OracleService) txRoutine() {
 				return
 			}
 
-			// reveal period of submitted vote do not match with registered prevote
-			if strings.Contains(res.RawLog, "reveal period") {
-				os.prevoteInited = false
-			}
-
 			if tick > res.Height/VotePeriod {
 				os.Logger.Error("Tx couldn't be sent within vote period")
 			}
@@ -158,87 +139,143 @@ func (os *OracleService) txRoutine() {
 	}
 }
 
-// ----------------------------------------------- singular
-func (os *OracleService) makeSingularVoteMsgs(denoms []string) ([]sdk.Msg, error) {
 
-	msgs := make([]sdk.Msg, 0)
 
+func (os *OracleService) makePrevoteMsgs(denoms []string, height int64) ([]sdk.Msg, error) {
 	feeder := os.cliCtx.GetFromAddress()
 
+//	validator, err := sdk.ValAddressFromBech32(viper.GetString(FlagValidator))
+	validator, err := sdk.ValAddressFromBech32(cfg.Config.Validator.OperatorAddr)
+
+	if err != nil {
+		return nil, fmt.Errorf("Invalid validator: %s", err.Error())
+	}
+
+	prevoteMsgs := make([]sdk.Msg, 0)
+	for _, denom := range denoms {
+		price := os.lunaPrices[denom]
+		if price.Denom != denom {
+			return nil, errors.New("Price is not initialized")
+		}
+
+		salt, err := generateRandomString(4)
+		if err != nil {
+			return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
+		}
+		os.salts[denom] = salt
+		voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
+
+		prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
+		prevoteMsgs = append(prevoteMsgs, prevote)
+
+		os.preLunaPrices[denom] = os.lunaPrices[denom]
+	}
+
+	return prevoteMsgs, nil
+}
+
+func (os *OracleService) makeVoteMsgs(denoms []string) ([]sdk.Msg, error) {
+	feeder := os.cliCtx.GetFromAddress()
+
+//	validator, err := sdk.ValAddressFromBech32(viper.GetString(FlagValidator))
 	validator, err := sdk.ValAddressFromBech32(cfg.Config.Validator.OperatorAddr)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid validator: %s", err.Error())
 	}
 
+	voteMsgs := make([]sdk.Msg, 0)
+	for _, denom := range denoms {
+		price := os.preLunaPrices[denom]
 
-        if os.prevoteInited {
+		salt := os.salts[denom]
+		if len(salt) == 0 {
+			// It can occur before the first prevote was sent
+			// So, this error may be temporary
+			return nil, fmt.Errorf("Fail to get salt: %s", err.Error())
+		}
+		vote := oracle.NewMsgExchangeRateVote(price.Amount, salt, "u"+denom, feeder, validator)
+		voteMsgs = append(voteMsgs, vote)
+	}
 
-                // voteMsgs
-		for _, denom := range denoms {
-	                price := os.preLunaPrices[denom]
+	for _, denom := range denoms {
+		price := os.lunaPrices[denom]
+		if price.Denom != denom {
+			return nil, errors.New("Price is not initialized")
+		}
 
-	                salt := os.salts[denom]
-	                if len(salt) == 0 {
-	                        // It can occur before the first prevote was sent
-	                        // So, this error may be temporary
-	                        return nil, fmt.Errorf("Fail to get salt: %s", err.Error())
-	                }
-	                vote := oracle.NewMsgExchangeRateVote(price.Amount, salt, "u"+denom, feeder, validator)
-	                msgs = append(msgs, vote)
-	        }
+		salt, err := generateRandomString(4)
+		if err != nil {
+			return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
+		}
+		os.salts[denom] = salt
 
-	        for _, denom := range denoms {
-	                price := os.lunaPrices[denom]
-	                if price.Denom != denom {
-	                        return nil, errors.New("Price is not initialized")
-	                }
+		voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
+		if err != nil {
+			return nil, fmt.Errorf("Fail to vote hash: %s", err.Error())
+		}
 
-	                salt, err := generateRandomString(4)
-	                if err != nil {
-	                        return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
-	                }
-	                os.salts[denom] = salt
+		prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
+		voteMsgs = append(voteMsgs, prevote)
 
-	                voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
-	                if err != nil {
-	                        return nil, fmt.Errorf("Fail to vote hash: %s", err.Error())
-	                }
+		os.preLunaPrices[denom] = os.lunaPrices[denom]
+	}
 
-	                prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
-	                msgs = append(msgs, prevote)
-
-	                os.preLunaPrices[denom] = os.lunaPrices[denom]
-	        }
-
-        }
-
-        // preVote
-        for _, denom := range denoms {
-                price := os.lunaPrices[denom]
-                if price.Denom != denom {
-                        return nil, errors.New("Price is not initialized")
-                }
-
-                salt, err := generateRandomString(4)
-                if err != nil {
-                        return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
-                }
-                os.salts[denom] = salt
-                voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
-
-                prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
-                msgs = append(msgs, prevote)
-
-                os.preLunaPrices[denom] = os.lunaPrices[denom]
-        }
-
-
-	os.prevoteInited = true
-
-	return msgs, nil
+	return voteMsgs, nil
 }
 
 // ----------------------------------------------- aggregate
+/*
+func (os *OracleService) makeAggregatePrevoteMsgs(denoms []string, height int64) ([]sdk.Msg, string, error) {
+
+        aggregatePreVoteMsgs := make([]sdk.Msg, 0)
+
+        exchangeRatesStr := ""
+
+        feeder := os.cliCtx.GetFromAddress()
+
+        //      validator, err := sdk.ValAddressFromBech32(viper.GetString(FlagValidator))
+        validator, err := sdk.ValAddressFromBech32(cfg.Config.Validator.OperatorAddr)
+        if err != nil {
+                return nil, "", fmt.Errorf("Invalid validator: %s", err.Error())
+        }
+
+        salt[0], err = generateRandomString(4)
+        if err != nil {
+                return nil, "", fmt.Errorf("Fail to generate salt: %s", err.Error())
+        }
+
+
+	for i, denom := range denoms {
+
+                price := os.lunaPrices[denom]
+                if price.Denom != denom {
+                        return nil, "", errors.New("Price is not initialized")
+                }
+
+                if i == len(denoms)-1 {
+                        exchangeRatesStr = exchangeRatesStr +fmt.Sprint(price)
+                } else {
+                        exchangeRatesStr = exchangeRatesStr +fmt.Sprint(price) +","
+                }
+        }
+
+
+
+        fmt.Println("\n\n!!!!!!!!!!!!!!!!!! makePreVote ")
+
+        aggregateVoteHash := oracle.GetAggregateVoteHash(salt[0], exchangeRatesStr, validator)
+        fmt.Println("--------> AggregateVoteHash: ", aggregateVoteHash)
+
+        aggregatePreVote := oracle.NewMsgAggregateExchangeRatePrevote(aggregateVoteHash, feeder, validator)
+        aggregatePreVoteMsgs = append(aggregatePreVoteMsgs, aggregatePreVote)
+
+
+        fmt.Println("--------> aggregatePrevoteMsgs, salt[0]: ", aggregatePreVoteMsgs, salt[0])
+        fmt.Println("\n\n")
+
+        return aggregatePreVoteMsgs, exchangeRatesStr, nil
+}
+*/
 func (os *OracleService) makeAggregateVoteMsgs(denoms []string) ([]sdk.Msg, error) {
 
         msgs := make([]sdk.Msg, 0)
@@ -250,7 +287,7 @@ func (os *OracleService) makeAggregateVoteMsgs(denoms []string) ([]sdk.Msg, erro
                 return nil, fmt.Errorf("Invalid validator: %s", err.Error())
         }
 
-	if os.prevoteInited {
+	if startSign != 1 {
 
 		// voteMsgs
 	        aggregateVote := oracle.NewMsgAggregateExchangeRateVote(salt[0], exchangeRatesStr[0], feeder, validator)
@@ -284,7 +321,7 @@ func (os *OracleService) makeAggregateVoteMsgs(denoms []string) ([]sdk.Msg, erro
         msgs = append(msgs, aggregatePreVote)
 
 
-	os.prevoteInited = true
+	startSign = 2
 
         salt[0] = salt[1]
 	exchangeRatesStr[0] = exchangeRatesStr[1]
@@ -309,7 +346,7 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 	if usdToKrw.Denom != "krw" {
 		return false, errors.New("Can't get sdr/krw")
 	}
-
+// If sdrToKrw is 0, this will panic
 	mntToKrw := os.ps.GetPrice("mnt/krw")
         if usdToKrw.Denom != "krw" {
                 return false, errors.New("Can't get mnt/krw")
@@ -345,7 +382,6 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 }
 
 func (os *OracleService) broadcast(msgs []sdk.Msg) (*sdk.TxResponse, error) {
-
 	txBldr, err := utils.PrepareTxBuilder(os.txBldr, os.cliCtx)
 	if err != nil {
 		return nil, err
@@ -354,9 +390,10 @@ func (os *OracleService) broadcast(msgs []sdk.Msg) (*sdk.TxResponse, error) {
 	fromName := os.cliCtx.GetFromName()
 
 	// build and sign the transaction
-	fmt.Printf("\n\033[31m")
+////	txBytes, err := txBldr.BuildAndSign(fromName, "qwer1234", msgs)
+
+////	Password
 	txBytes, err := txBldr.BuildAndSign(fromName, os.passphrase, msgs)
-	fmt.Printf("\033[0m")
 	if err != nil {
 		return nil, err
 	}

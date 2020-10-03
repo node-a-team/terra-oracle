@@ -4,11 +4,13 @@ import (
 	"sync"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
+
+//	cmn "github.com/tendermint/tendermint/libs/common"
+	service "github.com/tendermint/tendermint/libs/service"
 )
 
 type PriceService struct {
-	cmn.BaseService
+	service.BaseService
 	mutex  *sync.RWMutex
 	prices map[string]sdk.DecCoin
 }
@@ -18,7 +20,7 @@ func NewPriceService() *PriceService {
 		mutex:  new(sync.RWMutex),
 		prices: make(map[string]sdk.DecCoin),
 	}
-	ps.BaseService = *cmn.NewBaseService(nil, "PriceService", ps)
+	ps.BaseService = *service.NewBaseService(nil, "PriceService", ps)
 	return ps
 }
 

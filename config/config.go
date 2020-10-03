@@ -10,10 +10,11 @@ import (
 
 const (
 	ConfigPath = "config"
+	VoteMode = "vote-mode"
 )
 
 var (
-	Config	configType
+	Config		configType
 )
 
 
@@ -46,10 +47,6 @@ type configType struct {
 	}
 	Options	struct {
 		Interval			time.Duration	`json:"interval"`
-		ChangeRateLimit struct {
-			Soft			float64	`json:"soft"`
-			Hard			float64	`json:"hard"`
-		}
 	}
 }
 
