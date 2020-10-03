@@ -78,5 +78,5 @@ terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --fro
 terra-oracle service --from={name_of_feeder} --fees=35610000ukrw --gas=200000 --broadcast-mode=block --config={path_to_config.toml} --vote-mode aggregate
 
 // ex)
-terra-oracle service --from=ORACLE --fees=35610000ukrw --gas=200000 --broadcast-mode=block --config=$HOME/terra-oracle --vote-mode aggregate
+terra-oracle service --from=ORACLE --fees=356100ukrw --gas=200000 --broadcast-mode=block --config=$HOME/terra-oracle --vote-mode aggregate
 ```
