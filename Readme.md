@@ -4,6 +4,10 @@ By default, Tendermint waits 10 seconds for the transaction to be committed. But
 And make sure that you include ukrw in minimum gas price in terrad.toml to let users pay the fee by ukrw.  
 
 ## Changelog
+#### v0.0.4-alpha.1
+Add Flag in `Service` command for systemd service: `--vote-mode` (default `aggregate`)  
+Dependency was updated. (terra-core v0.3.0 -> v0.4.0 / cosmos-sdk v0.39.1 / tendermint v0.33.7)  
+
 #### v0.0.3-alpha.4
 Fix error: "Fail to parse price to int    module=price market=luna/krw"
 
@@ -39,11 +43,13 @@ Checkout https://github.com/golang/go/wiki/Modules
 
 ## Install
 ```bash
+cd $HOME
 git clone https://github.com/node-a-team/terra-oracle.git
-cd terra-oracle 
+cd $HOME/terra-oracle 
 go install ./cmd/terra-oracle
 
 terra-oracle version
+## v0.0.4-alpha.1
 ```
 
 ## Set your basic config for cli.
@@ -53,62 +59,24 @@ terracli config chain-id {chain_id}
 terracli config node {endpoint_of_your_node_rpc}
 
 ex)
-terracli config chain-id columbus-3
+terracli config chain-id columbus-4
 terracli config node tcp://localhost:26657
 ```
 
 ## Set your feeder.
 
 ```bash
-terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --gas=auto --gas-adjustment=1.25
+terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --fees 35610000ukrw 
 
 // ex)
-terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --gas=auto --gas-adjustment=1.25 
+terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --fees 35610000ukrw 
 ```
 
 ## Start terra-oracle service.
   
 ```sh
-terra-oracle service --from={name_of_feeder} --fees=3000ukrw --gas=150000 --broadcast-mode=block --config={path_to_config.toml}
+terra-oracle service --from={name_of_feeder} --fees=35610000ukrw --gas=200000 --broadcast-mode=block --config={path_to_config.toml} --vote-mode aggregate
 
 // ex)
-terra-oracle service --from=ORACLE --fees=3000ukrw --gas=150000 --broadcast-mode=block --config=$HOME/terra-oracle
-```
-
-## Use systemd service.
-  
-```sh
-# $HOME: /data/terra
-# $GOPATH: /data/terra/goApps
-# Path to config.toml: /data/terra/terra-oracle
-sudo tee /etc/systemd/system/terra-oracle.service > /dev/null <<EOF
-[Unit]
-Description=Terra Oracle
-After=network-online.target
-
-[Service]
-User=terra
-WorkingDirectory=/data/terra
-ExecStart=/data/terra/goApps/bin/terra-oracle service \
-    --from=ORACLE \
-    --fees=3000ukrw \
-    --gas=150000 \
-    --broadcast-mode=block \
-    --config="/data/terra/terra-oracle"
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=terra-oracle
-Restart=always
-RestartSec=3
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl enable terra-oracle.service
-sudo systemctl restart terra-oracle.service
-
-
-## log
-journalctl -f | grep terra-oracle
+terra-oracle service --from=ORACLE --fees=35610000ukrw --gas=200000 --broadcast-mode=block --config=$HOME/terra-oracle --vote-mode aggregate
 ```
