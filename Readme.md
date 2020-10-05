@@ -66,16 +66,16 @@ terracli config node tcp://localhost:26657
 ## Set your feeder.
 
 ```bash
-terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --fees 35610000ukrw 
+terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --fees 356100ukrw 
 
 // ex)
-terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --fees 35610000ukrw 
+terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --fees 356100ukrw 
 ```
 
 ## Start terra-oracle service.
   
 ```sh
-terra-oracle service --from={name_of_feeder} --fees=35610000ukrw --gas=200000 --broadcast-mode=block --config={path_to_config.toml} --vote-mode aggregate
+terra-oracle service --from={name_of_feeder} --fees=356100ukrw --gas=200000 --broadcast-mode=block --config={path_to_config.toml} --vote-mode aggregate
 
 // ex)
 terra-oracle service --from=ORACLE --fees=356100ukrw --gas=200000 --broadcast-mode=block --config=$HOME/terra-oracle --vote-mode aggregate
