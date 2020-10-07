@@ -27,7 +27,7 @@ func (ps *PriceService) mntToKrw(logger log.Logger) {
 				time.Sleep(cfg.Config.Options.Interval * time.Second)
 			}()
 
-//			resp, err := http.Get("http://www.apilayer.net/api/live?access_key=f4f5c16e99a0f32baeab5be8ced1cd39")
+//			resp, err := http.Get("http://www.apilayer.net/api/live?access_key=")
 			resp, err := http.Get(cfg.Config.APIs.MNT.Currencylayer)
 			if err != nil {
 				logger.Error("Fail to fetch from freeforexapi", err.Error())
