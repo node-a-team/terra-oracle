@@ -25,7 +25,7 @@ func (ps *PriceService) sdrToKrw(logger log.Logger) {
 				time.Sleep(cfg.Config.Options.Interval * time.Second)
 			}()
 
-//			resp, err := http.Get("https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y")
+			//			resp, err := http.Get("https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y")
 			resp, err := http.Get(cfg.Config.APIs.SDR.IMF)
 			if err != nil {
 				logger.Error("Fail to fetch from imf", err.Error())
@@ -50,14 +50,16 @@ func (ps *PriceService) sdrToKrw(logger log.Logger) {
 			price := re.FindString(strs[1])
 			price = strings.ReplaceAll(price, ",", "")
 
-			logger.Info(fmt.Sprintf("Recent sdr/krw: %s", price))
+			timestamp := time.Now().UTC().Unix()
+
+			logger.Info(fmt.Sprintf("Recent sdr/krw: %s, timestamp: %d", price, timestamp))
 
 			decAmount, err := sdk.NewDecFromStr(price)
 			if err != nil {
 				logger.Error("Fail to parse price to Dec", err.Error())
 				return
 			}
-			ps.SetPrice("sdr/krw", sdk.NewDecCoinFromDec("krw", decAmount))
+			ps.SetPrice("sdr/krw", sdk.NewDecCoinFromDec("krw", decAmount), timestamp)
 		}()
 	}
 }
