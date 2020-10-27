@@ -104,8 +104,8 @@ func (lpcd *LunaPriceCallData) toBytes() []byte {
 
 var (
 	MULTIPLIER           = uint64(1000000)
-	LUNA_PRICE_CALLDATA  = LunaPriceCallData{Exchanges: []string{"coinone", "bithumb", "gdac", "gopax"}, BaseSymbol: "LUNA", QuoteSymbol: "KRW", Multiplier: MULTIPLIER}
-	LUNA_PRICE_END_POINT = fmt.Sprintf("/oracle/request_search?oid=19&calldata=%x&min_count=3&ask_count=4", LUNA_PRICE_CALLDATA.toBytes())
+	LUNA_PRICE_CALLDATA  = LunaPriceCallData{Exchanges: []string{"coinone", "bithumb", "huobipro", "binance"}, BaseSymbol: "LUNA", QuoteSymbol: "KRW", Multiplier: MULTIPLIER}
+	LUNA_PRICE_END_POINT = fmt.Sprintf("/oracle/request_search?oid=22&calldata=%x&min_count=3&ask_count=4", LUNA_PRICE_CALLDATA.toBytes())
 )
 
 func (ps *PriceService) bandLunaToKrw(logger log.Logger) {

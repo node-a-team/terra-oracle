@@ -79,11 +79,11 @@ func (ps *PriceService) fxsToKrw(logger log.Logger) {
 					logger.Error("Fail to parse price to Dec", err.Error())
 					return
 				}
-				rates[symbol] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec(symbol, decAmount), Timestamp: rate.ResolveTime}
+				rates[symbol] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("krw", decAmount), Timestamp: rate.ResolveTime}
 			}
 
-			rates["mnt"] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("mnt", rates["krw"].Px.Amount.Quo(rates["mnt"].Px.Amount)), Timestamp: rates["mnt"].Timestamp}
-			rates["sdr"] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("sdr", rates["krw"].Px.Amount.Quo(rates["sdr"].Px.Amount)), Timestamp: rates["sdr"].Timestamp}
+			rates["mnt"] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("krw", rates["krw"].Px.Amount.Quo(rates["mnt"].Px.Amount)), Timestamp: rates["mnt"].Timestamp}
+			rates["sdr"] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("krw", rates["krw"].Px.Amount.Quo(rates["sdr"].Px.Amount)), Timestamp: rates["sdr"].Timestamp}
 
 			ps.SetPrice("usd/krw", rates["krw"].Px, rates["krw"].Timestamp)
 			ps.SetPrice("mnt/krw", rates["mnt"].Px, rates["mnt"].Timestamp)
