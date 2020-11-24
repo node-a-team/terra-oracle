@@ -1,10 +1,11 @@
 package price
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -24,7 +25,7 @@ func (ps *PriceService) usdToKrw(logger log.Logger) {
 				time.Sleep(30 * time.Second)
 			}()
 
-//			resp, err := http.Get("https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD")
+			// resp, err := http.Get("https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD")
 			resp, err := http.Get(cfg.Config.APIs.USD.Dunamu)
 			if err != nil {
 				logger.Error("Fail to fetch from dunamu", err.Error())
@@ -39,19 +40,30 @@ func (ps *PriceService) usdToKrw(logger log.Logger) {
 				return
 			}
 
-			re, _ := regexp.Compile("\"basePrice\":[0-9.]+")
-			str := re.FindString(string(body))
-			re, _ = regexp.Compile("[0-9.]+")
-			price := re.FindString(str)
+			var res []map[string]interface{}
+			err = json.Unmarshal(body, &res)
+			if err != nil {
+				logger.Error("Fail to unmarshal body", err.Error())
+				return
+			}
 
-			logger.Info(fmt.Sprintf("Recent usd/krw: %s", price))
+			if len(res) == 0 {
+				logger.Error("Fail got empty response")
+				return
+			}
+
+			price := strconv.FormatFloat(res[0]["basePrice"].(float64), 'f', -1, 64)
+			timestamp := int64(res[0]["timestamp"].(float64)) / 1000
+
+			logger.Info(fmt.Sprintf("Recent usd/krw: %s, timestamp: %d", price, timestamp))
 
 			decAmount, err := sdk.NewDecFromStr(price)
 			if err != nil {
 				logger.Error("Fail to parse price to Dec", err.Error())
 				return
 			}
-			ps.SetPrice("usd/krw", sdk.NewDecCoinFromDec("krw", decAmount))
+
+			ps.SetPrice("usd/krw", sdk.NewDecCoinFromDec("krw", decAmount), timestamp)
 		}()
 	}
 }

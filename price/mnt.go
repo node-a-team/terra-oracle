@@ -1,12 +1,12 @@
 package price
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -14,8 +14,16 @@ import (
 	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
-func (ps *PriceService) mntToKrw(logger log.Logger) {
+type APILayerResponse struct {
+	Success   bool               `json:"success"`
+	Terms     string             `json:"terms"`
+	Privacy   string             `json:"privacy"`
+	Timestamp int64              `json:"timestamp"`
+	Source    string             `json:"source"`
+	Quotes    map[string]float64 `json:"quotes"`
+}
 
+func (ps *PriceService) mntToKrw(logger log.Logger) {
 
 	for {
 		func() {
@@ -27,7 +35,7 @@ func (ps *PriceService) mntToKrw(logger log.Logger) {
 				time.Sleep(cfg.Config.Options.Interval * time.Second)
 			}()
 
-//			resp, err := http.Get("http://www.apilayer.net/api/live?access_key=")
+			//			resp, err := http.Get("http://www.apilayer.net/api/live?access_key=")
 			resp, err := http.Get(cfg.Config.APIs.MNT.Currencylayer)
 			if err != nil {
 				logger.Error("Fail to fetch from freeforexapi", err.Error())
@@ -42,42 +50,25 @@ func (ps *PriceService) mntToKrw(logger log.Logger) {
 				return
 			}
 
-			usdToKrw := getUsdPrice(string(body), "KRW")
-                        usdToMnt := getUsdPrice(string(body), "MNT")
-			mntToKrw := usdToKrw / usdToMnt
+			var res APILayerResponse
+			err = json.Unmarshal(body, &res)
+			if err != nil {
+				logger.Error("Fail to unmarshal body", err.Error())
+				return
+			}
 
-			price  := strconv.FormatFloat(mntToKrw, 'f', -1, 64)
+			mntToKrw := res.Quotes["USDKRW"] / res.Quotes["USDMNT"]
 
+			price := strconv.FormatFloat(mntToKrw, 'f', -1, 64)
 
-			logger.Info(fmt.Sprintf("Recent mnt/krw: %s", price))
+			logger.Info(fmt.Sprintf("Recent mnt/krw: %s, timestamp: %d", price, res.Timestamp))
 
 			decAmount, err := sdk.NewDecFromStr(price)
 			if err != nil {
 				logger.Error("Fail to parse price to Dec", err.Error())
 				return
 			}
-			ps.SetPrice("mnt/krw", sdk.NewDecCoinFromDec("krw", decAmount))
+			ps.SetPrice("mnt/krw", sdk.NewDecCoinFromDec("krw", decAmount), res.Timestamp)
 		}()
 	}
 }
-
-func getUsdPrice(apiBody string, currency string) float64 {
-
-	re, _ := regexp.Compile("\"USD" +currency +"\":[0-9.]+")
-        str := re.FindString(string(apiBody))
-
-        re, _ = regexp.Compile("[0-9.]+")
-
-        return stringToFloat64(re.FindString(str))
-
-}
-
-func stringToFloat64(str string) float64 {
-
-        var floatResult float64
-
-        floatResult, _ = strconv.ParseFloat(str, 64)
-
-        return floatResult
-}
-

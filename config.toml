@@ -23,5 +23,8 @@ password = ""
 	[APIs.sdr]
 	imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
+    [APIs.band]
+    band = "https://poa-api.bandchain.org"
+
 [Options]
 interval = 200
