@@ -52,7 +52,7 @@ cd $HOME/terra-oracle
 go install ./cmd/terra-oracle
 
 terra-oracle version
-## v0.0.4-alpha.1
+## v0.0.5-alpha.1
 ```
 
 ## Set your basic config for cli.
