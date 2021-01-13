@@ -34,6 +34,7 @@ func (ps *PriceService) OnStart() error {
 	go ps.coinoneToLuna(ps.Logger.With("market", "luna/krw"))
 	go ps.sdrToKrw(ps.Logger.With("market", "sdr/krw"))
 	go ps.usdToKrw(ps.Logger.With("market", "usd/krw"))
+	go ps.eurToKrw(ps.Logger.With("market", "eur/krw"))
 	go ps.mntToKrw(ps.Logger.With("market", "mnt/krw"))
 	go ps.bandLunaToKrw(ps.Logger.With("band", "luna/krw"))
 	go ps.fxsToKrw(ps.Logger.With("band", "fxs/krw"))

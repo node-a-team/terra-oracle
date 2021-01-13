@@ -85,7 +85,7 @@ func (os *OracleService) txRoutine() {
 	var voteMsgs []sdk.Msg
 	var latestVoteHeight int64 = 0
 
-	denoms := []string{"krw", "usd", "sdr", "mnt"}
+	denoms := []string{"krw", "usd", "eur", "sdr", "mnt"}
 
 
 	for {
@@ -305,19 +305,28 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 		return false, errors.New("Can't get usd/krw")
 	}
 
+	eurToKrw := os.ps.GetPrice("eur/krw")
+        if eurToKrw.Denom != "krw" {
+                return false, errors.New("Can't get eur/krw")
+        }
+
 	sdrToKrw := os.ps.GetPrice("sdr/krw")
-	if usdToKrw.Denom != "krw" {
+	if sdrToKrw.Denom != "krw" {
 		return false, errors.New("Can't get sdr/krw")
 	}
 
 	mntToKrw := os.ps.GetPrice("mnt/krw")
-        if usdToKrw.Denom != "krw" {
+        if mntToKrw.Denom != "krw" {
                 return false, errors.New("Can't get mnt/krw")
         }
 
 	// If usdToKrw is 0, this will panic
 	lunaToUsdAmount := lunaToKrw.Amount.Quo(usdToKrw.Amount)
 	lunaToUsd := sdk.NewDecCoinFromDec("usd", lunaToUsdAmount)
+
+	// If usdToKrw is 0, this will panic
+        lunaToEurAmount := lunaToKrw.Amount.Quo(eurToKrw.Amount)
+        lunaToEur := sdk.NewDecCoinFromDec("eur", lunaToEurAmount)
 
 	// If sdrToKrw is 0, this will panic
 	lunaToSdrAmount := lunaToKrw.Amount.Quo(sdrToKrw.Amount)
@@ -328,16 +337,19 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 	lunaToMnt :=  sdk.NewDecCoinFromDec("mnt", lunaToMntAmount)
 
 	os.Logger.Info(fmt.Sprintf("usd/krw: %s", usdToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("eur/krw: %s", eurToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("sdr/krw: %s", sdrToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("mnt/krw: %s", mntToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("luna/krw: %s", lunaToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("luna/usd: %s", lunaToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("luna/eur: %s", lunaToEur.String()))
 	os.Logger.Info(fmt.Sprintf("luna/sdr: %s", lunaToSdr.String()))
 	os.Logger.Info(fmt.Sprintf("luna/mnt: %s", lunaToMnt.String()))
 
 
 	os.lunaPrices["krw"] = lunaToKrw
 	os.lunaPrices["usd"] = lunaToUsd
+	os.lunaPrices["eur"] = lunaToEur
 	os.lunaPrices["sdr"] = lunaToSdr
 	os.lunaPrices["mnt"] = lunaToMnt
 

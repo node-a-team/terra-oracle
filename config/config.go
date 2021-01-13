@@ -35,6 +35,10 @@ type configType struct {
 			Dunamu string `json:"dunamu"`
 		}
 
+		EUR struct {
+			Dunamu string `json:"dunamu"`
+		}
+
 		MNT struct {
 			Currencylayer string `json:"currencylayer"`
 		}
