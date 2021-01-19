@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -24,7 +25,7 @@ type APILayerResponse struct {
 }
 
 var (
-	stables = []string{"MNT"}
+	stables = []string{"USD", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"}
 )
 
 func (ps *PriceService) stablesToKrw(logger log.Logger) {
@@ -39,7 +40,7 @@ func (ps *PriceService) stablesToKrw(logger log.Logger) {
 				time.Sleep(cfg.Config.Options.Interval * time.Second)
 			}()
 
-			//			resp, err := http.Get("http://www.apilayer.net/api/live?access_key=")
+			// resp, err := http.Get("https://api.currencylayer.com/live?access_key=")
 			resp, err := http.Get(cfg.Config.APIs.STABLES.Currencylayer)
 			if err != nil {
 				logger.Error("Fail to fetch from currencylayer", err.Error())
@@ -62,35 +63,41 @@ func (ps *PriceService) stablesToKrw(logger log.Logger) {
 			}
 
 
-
-
-			setStablesPrice("MNT", res, logger)
-/*			mntToKrw := res.Quotes["USDKRW"] / res.Quotes["USD"+]
-			price := strconv.FormatFloat(mntToKrw, 'f', -1, 64)
-			logger.Info(fmt.Sprintf("Recent mnt/krw: %s, timestamp: %d", price, res.Timestamp))
-			decAmount, err := sdk.NewDecFromStr(price)
-			if err != nil {
-				logger.Error("Fail to parse price to Dec", err.Error())
-				return
+			// Set
+			for _, s := range stables {
+				if s == "USD" || s == "MNT" || s == "EUR" {
+					setStablesPrice(s, res, ps, logger)
+				} else {
+					fmt.Printf("\n> %s/krw: %f", s, res.Quotes["USDKRW"] / res.Quotes["USD"+s])
+				}
+				fmt.Println("")
 			}
-			ps.SetPrice("mnt/krw", sdk.NewDecCoinFromDec("krw", decAmount), res.Timestamp)
-
-*/
-
 
 		}()
 	}
 }
 
-func (ps *PriceService)  setStablesPrice(stable string, res APILayerResponse, logger log.Logger) {
+func setStablesPrice(stable string, res APILayerResponse, ps *PriceService, logger log.Logger) {
 
-	stableToKrw := res.Quotes["USDKRW"] / res.Quotes["USD"+stable]
+	// stable == "USD"
+	stableToKrw := res.Quotes["USDKRW"]
+
+	if stable != "USD" {
+		stableToKrw = res.Quotes["USDKRW"] / res.Quotes["USD"+stable]
+	}
+
+
+//	} else {
+//		fmt.Println("Not Contains in stables: " +stables)
+//	}
+
         price := strconv.FormatFloat(stableToKrw, 'f', -1, 64)
-        logger.Info(fmt.Sprintf("Recent %s/KRW: %s, timestamp: %d", stable, price, res.Timestamp))
+        logger.Info(fmt.Sprintf("Recent %s/krw: %s, timestamp: %d", strings.ToLower(stable), price, res.Timestamp))
         decAmount, err := sdk.NewDecFromStr(price)
         if err != nil {
                 logger.Error("Fail to parse price to Dec", err.Error())
 	        return
         }
-        ps.SetPrice(stable +"/KRW", sdk.NewDecCoinFromDec("krw", decAmount), res.Timestamp)
+        ps.SetPrice(strings.ToLower(stable) +"/krw", sdk.NewDecCoinFromDec("krw", decAmount), res.Timestamp)
 }
+

@@ -36,13 +36,6 @@ type configType struct {
 		STABLES struct {
 			Currencylayer string `json:"currencylayer"`
 		}
-		USD struct {
-			Dunamu string `json:"dunamu"`
-		}
-
-		EUR struct {
-			Dunamu string `json:"dunamu"`
-		}
 
 		SDR struct {
 			IMF string `json:"imf"`

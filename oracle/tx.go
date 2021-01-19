@@ -86,7 +86,8 @@ func (os *OracleService) txRoutine() {
 	var latestVoteHeight int64 = 0
 
 	denoms := []string{"krw", "usd", "eur", "sdr", "mnt"}
-
+	// for Proposal#26
+	// denoms := []string{"krw", "sdr", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud"}
 
 	for {
 		func() {
