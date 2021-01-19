@@ -3,13 +3,13 @@
 title = "TOML Document"
 
 [Validator]
-operatorAddr = "terravaloper~"
+operatorAddr = "terravaloper1062zkmnlqhcpwsryk5kjf345x6njzzksqk9ljl"
 
 [Feeder]
 password = ""
 
 [APIs]
-	[APIs.krw]
+	[APIs.LUNA.KRW]
 	coinone = "https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna"
 
 	[APIs.usd]
@@ -26,8 +26,8 @@ password = ""
 	[APIs.sdr]
 	imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
-        [APIs.band]
-        band = "https://poa-api.bandchain.org"
+	[APIs.band]
+	band = "https://poa-api.bandchain.org"
 
 [Options]
 interval = 200

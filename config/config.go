@@ -27,20 +27,21 @@ type configType struct {
 		Password string `json:"password"`
 	}
 	APIs struct {
-		KRW struct {
-			Coinone string `json:"coinone"`
+		LUNA struct {
+			KRW struct {
+				Coinone string `json:"coinone"`
+			}
 		}
 
+		STABLES struct {
+			Currencylayer string `json:"currencylayer"`
+		}
 		USD struct {
 			Dunamu string `json:"dunamu"`
 		}
 
 		EUR struct {
 			Dunamu string `json:"dunamu"`
-		}
-
-		MNT struct {
-			Currencylayer string `json:"currencylayer"`
 		}
 
 		SDR struct {
