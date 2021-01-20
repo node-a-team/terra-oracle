@@ -41,7 +41,7 @@ func (ps *PriceService) stablesToKrw(logger log.Logger) {
 			}()
 
 			// resp, err := http.Get("https://api.currencylayer.com/live?access_key=")
-			resp, err := http.Get(cfg.Config.APIs.STABLES.Currencylayer)
+			resp, err := http.Get(cfg.Config.APIs.Stables.Currencylayer)
 			if err != nil {
 				logger.Error("Fail to fetch from currencylayer", err.Error())
 				return
@@ -68,10 +68,10 @@ func (ps *PriceService) stablesToKrw(logger log.Logger) {
 				if s == "USD" || s == "MNT" || s == "EUR" {
 					setStablesPrice(s, res, ps, logger)
 				} else {
-					fmt.Printf("\n> %s/krw: %f", s, res.Quotes["USDKRW"] / res.Quotes["USD"+s])
+					logger.Info(fmt.Sprintf("Ready %s/krw: %f", s, res.Quotes["USDKRW"] / res.Quotes["USD"+s]))
 				}
-				fmt.Println("")
 			}
+			fmt.Println("")
 
 		}()
 	}

@@ -35,6 +35,7 @@ func (ps *PriceService) OnStart() error {
 	go ps.sdrToKrw(ps.Logger.With("market", "sdr/krw"))
 	go ps.stablesToKrw(ps.Logger.With("market", "stables/krw"))
 
+	// for Band APIs
 	go ps.bandLunaToKrw(ps.Logger.With("band", "luna/krw"))
 	go ps.fxsToKrw(ps.Logger.With("band", "fxs/krw"))
 	return nil

@@ -9,19 +9,20 @@ operatorAddr = "terravaloper~"
 password = ""
 
 [APIs]
-	[APIs.LUNA.KRW]
-	coinone = "https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna"
+	[APIs.Luna.Krw]
+        coinone = "https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna"
 
-	# API key is required
-	# https://currencylayer.com/product
-	[APIs.STABLES]
-	currencylayer = "https://api.currencylayer.com/live?access_key="
+        [APIs.Stables]
+        # API key is required
+        # https://currencylayer.com/product
+        currencylayer = "https://api.currencylayer.com/live?access_key="
 
-	[APIs.sdr]
-	imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
+        [APIs.sdr]
+        imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
-	[APIs.band]
-	band = "https://poa-api.bandchain.org"
+        [APIs.band]
+        active = true # true/false
+        band = "https://poa-api.bandchain.org"
 
 [Options]
 interval = 200
