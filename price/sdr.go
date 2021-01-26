@@ -26,7 +26,7 @@ func (ps *PriceService) sdrToKrw(logger log.Logger) {
 			}()
 
 			//			resp, err := http.Get("https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y")
-			resp, err := http.Get(cfg.Config.APIs.SDR.IMF)
+			resp, err := http.Get(cfg.Config.APIs.Sdr.Imf)
 			if err != nil {
 				logger.Error("Fail to fetch from imf", err.Error())
 				return

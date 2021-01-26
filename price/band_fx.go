@@ -31,6 +31,11 @@ type Result struct {
 
 func (ps *PriceService) fxsToKrw(logger log.Logger) {
 	for {
+		if !cfg.Config.APIs.Band.Active {
+			logger.Info("Warning APIs.Band.Active is false in Config.toml. Let's exit the fxsToKrw().")
+			break
+		}
+
 		func() {
 			defer func() {
 				if r := recover(); r != nil {

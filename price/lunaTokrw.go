@@ -36,7 +36,7 @@ func (ps *PriceService) coinoneToLuna(logger log.Logger) {
 			}()
 
 			// resp, err := http.Get("https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna")
-			resp, err := http.Get(cfg.Config.APIs.KRW.Coinone)
+			resp, err := http.Get(cfg.Config.APIs.Luna.Krw.Coinone)
 			if err != nil {
 				logger.Error("Fail to fetch from coinone", err.Error())
 				return

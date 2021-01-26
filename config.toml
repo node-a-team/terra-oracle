@@ -9,24 +9,19 @@ operatorAddr = "terravaloper~"
 password = ""
 
 [APIs]
-	[APIs.krw]
-	coinone = "https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna"
+	[APIs.Luna.Krw]
+        coinone = "https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna"
 
-	[APIs.usd]
-	dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD"
+        [APIs.Stables]
+        # API key is required
+        # https://currencylayer.com/product
+        currencylayer = "https://api.currencylayer.com/live?access_key="
 
-	[APIs.eur]
-        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWEUR"
-
-	[APIs.mnt]
-	# API key is required
-	# https://currencylayer.com/product
-	currencylayer = "http://www.apilayer.net/api/live?access_key="
-
-	[APIs.sdr]
-	imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
+        [APIs.sdr]
+        imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
         [APIs.band]
+        active = true # true/false
         band = "https://poa-api.bandchain.org"
 
 [Options]

@@ -31,7 +31,7 @@ import (
 )
 
 var (
-	version = "v0.0.5-alpha.2"
+	version = "v0.0.5-alpha.3"
 	logger = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 )
 

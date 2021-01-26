@@ -27,27 +27,22 @@ type configType struct {
 		Password string `json:"password"`
 	}
 	APIs struct {
-		KRW struct {
-			Coinone string `json:"coinone"`
+		Luna struct {
+			Krw struct {
+				Coinone string `json:"coinone"`
+			}
 		}
 
-		USD struct {
-			Dunamu string `json:"dunamu"`
-		}
-
-		EUR struct {
-			Dunamu string `json:"dunamu"`
-		}
-
-		MNT struct {
+		Stables struct {
 			Currencylayer string `json:"currencylayer"`
 		}
 
-		SDR struct {
-			IMF string `json:"imf"`
+		Sdr struct {
+			Imf string `json:"imf"`
 		}
 
 		Band struct {
+			Active bool `json:"active"`
 			Band string `json:"band"`
 		}
 	}

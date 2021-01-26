@@ -85,8 +85,7 @@ func (os *OracleService) txRoutine() {
 	var voteMsgs []sdk.Msg
 	var latestVoteHeight int64 = 0
 
-	denoms := []string{"krw", "usd", "eur", "sdr", "mnt"}
-
+	denoms := []string{"krw", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud", "sdr"}
 
 	for {
 		func() {
@@ -146,7 +145,7 @@ func (os *OracleService) txRoutine() {
 			}
 
 			// reveal period of submitted vote do not match with registered prevote
-			if strings.Contains(res.RawLog, "reveal period") {
+			if strings.Contains(res.RawLog, "reveal period") || strings.Contains(res.RawLog, "failed to excute message") {
 				os.prevoteInited = false
 			}
 
@@ -183,6 +182,7 @@ func (os *OracleService) makeSingularVoteMsgs(denoms []string) ([]sdk.Msg, error
 	                        // So, this error may be temporary
 	                        return nil, fmt.Errorf("Fail to get salt: %s", err.Error())
 	                }
+
 	                vote := oracle.NewMsgExchangeRateVote(price.Amount, salt, "u"+denom, feeder, validator)
 	                msgs = append(msgs, vote)
 	        }
@@ -299,59 +299,152 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 	if lunaToKrw.Denom != "krw" {
 		return false, errors.New("Can't get luna/krw")
 	}
-
+	sdrToKrw := os.ps.GetPrice("sdr/krw")
+        if sdrToKrw.Denom != "krw" {
+                return false, errors.New("Can't get sdr/krw")
+        }
 	usdToKrw := os.ps.GetPrice("usd/krw")
 	if usdToKrw.Denom != "krw" {
 		return false, errors.New("Can't get usd/krw")
 	}
-
 	eurToKrw := os.ps.GetPrice("eur/krw")
         if eurToKrw.Denom != "krw" {
                 return false, errors.New("Can't get eur/krw")
         }
-
-	sdrToKrw := os.ps.GetPrice("sdr/krw")
-	if sdrToKrw.Denom != "krw" {
-		return false, errors.New("Can't get sdr/krw")
-	}
-
 	mntToKrw := os.ps.GetPrice("mnt/krw")
         if mntToKrw.Denom != "krw" {
                 return false, errors.New("Can't get mnt/krw")
         }
+	cnyToKrw := os.ps.GetPrice("cny/krw")
+        if cnyToKrw.Denom != "krw" {
+                return false, errors.New("Can't get cny/krw")
+        }
+	jpyToKrw := os.ps.GetPrice("jpy/krw")
+        if jpyToKrw.Denom != "krw" {
+                return false, errors.New("Can't get jpy/krw")
+        }
+	gbpToKrw := os.ps.GetPrice("gbp/krw")
+        if gbpToKrw.Denom != "krw" {
+                return false, errors.New("Can't get gbp/krw")
+        }
+	inrToKrw := os.ps.GetPrice("inr/krw")
+        if inrToKrw.Denom != "krw" {
+                return false, errors.New("Can't get inr/krw")
+        }
+	cadToKrw := os.ps.GetPrice("cad/krw")
+        if cadToKrw.Denom != "krw" {
+                return false, errors.New("Can't get cad/krw")
+        }
+	chfToKrw := os.ps.GetPrice("chf/krw")
+        if chfToKrw.Denom != "krw" {
+                return false, errors.New("Can't get chf/krw")
+        }
+	hkdToKrw := os.ps.GetPrice("hkd/krw")
+        if hkdToKrw.Denom != "krw" {
+                return false, errors.New("Can't get hkd/krw")
+        }
+	sgdToKrw := os.ps.GetPrice("sgd/krw")
+        if sgdToKrw.Denom != "krw" {
+                return false, errors.New("Can't get sgd/krw")
+        }
+	audToKrw := os.ps.GetPrice("aud/krw")
+        if audToKrw.Denom != "krw" {
+                return false, errors.New("Can't get aud/krw")
+        }
 
-	// If usdToKrw is 0, this will panic
-	lunaToUsdAmount := lunaToKrw.Amount.Quo(usdToKrw.Amount)
-	lunaToUsd := sdk.NewDecCoinFromDec("usd", lunaToUsdAmount)
 
-	// If usdToKrw is 0, this will panic
-        lunaToEurAmount := lunaToKrw.Amount.Quo(eurToKrw.Amount)
-        lunaToEur := sdk.NewDecCoinFromDec("eur", lunaToEurAmount)
 
 	// If sdrToKrw is 0, this will panic
 	lunaToSdrAmount := lunaToKrw.Amount.Quo(sdrToKrw.Amount)
-	lunaToSdr := sdk.NewDecCoinFromDec("sdr", lunaToSdrAmount)
+        lunaToSdr := sdk.NewDecCoinFromDec("sdr", lunaToSdrAmount)
 
-	// If mntToKrw is 0, this will panic
+	lunaToUsdAmount := lunaToKrw.Amount.Quo(usdToKrw.Amount)
+	lunaToUsd := sdk.NewDecCoinFromDec("usd", lunaToUsdAmount)
+
+        lunaToEurAmount := lunaToKrw.Amount.Quo(eurToKrw.Amount)
+        lunaToEur := sdk.NewDecCoinFromDec("eur", lunaToEurAmount)
+
 	lunaToMntAmount := lunaToKrw.Amount.Quo(mntToKrw.Amount)
 	lunaToMnt :=  sdk.NewDecCoinFromDec("mnt", lunaToMntAmount)
 
+	lunaToCnyAmount := lunaToKrw.Amount.Quo(cnyToKrw.Amount)
+        lunaToCny :=  sdk.NewDecCoinFromDec("cny", lunaToCnyAmount)
+
+	lunaToJpyAmount := lunaToKrw.Amount.Quo(jpyToKrw.Amount)
+        lunaToJpy :=  sdk.NewDecCoinFromDec("jpy", lunaToJpyAmount)
+
+	lunaToGbpAmount := lunaToKrw.Amount.Quo(gbpToKrw.Amount)
+        lunaToGbp :=  sdk.NewDecCoinFromDec("gbp", lunaToGbpAmount)
+
+	lunaToInrAmount := lunaToKrw.Amount.Quo(inrToKrw.Amount)
+        lunaToInr :=  sdk.NewDecCoinFromDec("inr", lunaToInrAmount)
+
+	lunaToCadAmount := lunaToKrw.Amount.Quo(cadToKrw.Amount)
+        lunaToCad :=  sdk.NewDecCoinFromDec("cad", lunaToCadAmount)
+
+	lunaToChfAmount := lunaToKrw.Amount.Quo(chfToKrw.Amount)
+        lunaToChf :=  sdk.NewDecCoinFromDec("chf", lunaToChfAmount)
+
+	lunaToHkdAmount := lunaToKrw.Amount.Quo(hkdToKrw.Amount)
+        lunaToHkd :=  sdk.NewDecCoinFromDec("hkd", lunaToHkdAmount)
+
+	lunaToSgdAmount := lunaToKrw.Amount.Quo(sgdToKrw.Amount)
+        lunaToSgd :=  sdk.NewDecCoinFromDec("sgd", lunaToSgdAmount)
+
+	lunaToAudAmount := lunaToKrw.Amount.Quo(audToKrw.Amount)
+        lunaToAud :=  sdk.NewDecCoinFromDec("aud", lunaToAudAmount)
+
+
+
+
+
+
+
+	os.Logger.Info(fmt.Sprintf("sdr/krw: %s", sdrToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("usd/krw: %s", usdToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("eur/krw: %s", eurToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("sdr/krw: %s", sdrToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("mnt/krw: %s", mntToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("cny/krw: %s", cnyToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("jpy/krw: %s", jpyToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("gbp/krw: %s", gbpToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("inr/krw: %s", inrToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("cad/krw: %s", cadToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("chf/krw: %s", chfToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("hkd/krw: %s", hkdToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("sgd/krw: %s", sgdToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("aud/krw: %s", audToKrw.String()))
+
+
 	os.Logger.Info(fmt.Sprintf("luna/krw: %s", lunaToKrw.String()))
+	os.Logger.Info(fmt.Sprintf("luna/sdr: %s", lunaToSdr.String()))
 	os.Logger.Info(fmt.Sprintf("luna/usd: %s", lunaToUsd.String()))
 	os.Logger.Info(fmt.Sprintf("luna/eur: %s", lunaToEur.String()))
-	os.Logger.Info(fmt.Sprintf("luna/sdr: %s", lunaToSdr.String()))
 	os.Logger.Info(fmt.Sprintf("luna/mnt: %s", lunaToMnt.String()))
+	os.Logger.Info(fmt.Sprintf("luna/cny: %s", lunaToCny.String()))
+	os.Logger.Info(fmt.Sprintf("luna/jpy: %s", lunaToJpy.String()))
+	os.Logger.Info(fmt.Sprintf("luna/gbp: %s", lunaToGbp.String()))
+	os.Logger.Info(fmt.Sprintf("luna/inr: %s", lunaToInr.String()))
+	os.Logger.Info(fmt.Sprintf("luna/cad: %s", lunaToCad.String()))
+	os.Logger.Info(fmt.Sprintf("luna/chf: %s", lunaToChf.String()))
+	os.Logger.Info(fmt.Sprintf("luna/hkd: %s", lunaToHkd.String()))
+	os.Logger.Info(fmt.Sprintf("luna/sgd: %s", lunaToSgd.String()))
+	os.Logger.Info(fmt.Sprintf("luna/aud: %s", lunaToAud.String()))
 
 
 	os.lunaPrices["krw"] = lunaToKrw
+	os.lunaPrices["sdr"] = lunaToSdr
 	os.lunaPrices["usd"] = lunaToUsd
 	os.lunaPrices["eur"] = lunaToEur
-	os.lunaPrices["sdr"] = lunaToSdr
 	os.lunaPrices["mnt"] = lunaToMnt
+	os.lunaPrices["cny"] = lunaToCny
+	os.lunaPrices["jpy"] = lunaToJpy
+	os.lunaPrices["gbp"] = lunaToGbp
+	os.lunaPrices["inr"] = lunaToInr
+	os.lunaPrices["cad"] = lunaToCad
+	os.lunaPrices["chf"] = lunaToChf
+	os.lunaPrices["hkd"] = lunaToHkd
+	os.lunaPrices["sgd"] = lunaToSgd
+	os.lunaPrices["aud"] = lunaToAud
 
 	return false, nil
 }
