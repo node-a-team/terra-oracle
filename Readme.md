@@ -1,5 +1,4 @@
-# Do not use the new version (v0.0.5-alpha.3) on Mainnet yet. 
-# Use it after Proposal #26 has passed. 
+# Do not use the new version (v0.0.5-alpha.3) on Mainnet yet. Use it after Proposal #26 has passed. 
 
 
 ## How to use
