@@ -62,14 +62,13 @@ func (ps *PriceService) stablesToKrw(logger log.Logger) {
 				return
 			}
 
-
 			// Set
 			for _, s := range stables {
-				if s == "USD" || s == "MNT" || s == "EUR" {
+//				if s == "USD" || s == "MNT" || s == "EUR" {
 					setStablesPrice(s, res, ps, logger)
-				} else {
-					logger.Info(fmt.Sprintf("Ready %s/krw: %f", s, res.Quotes["USDKRW"] / res.Quotes["USD"+s]))
-				}
+//				} else {
+//					logger.Info(fmt.Sprintf("Ready %s/krw: %f", s, res.Quotes["USDKRW"] / res.Quotes["USD"+s]))
+//				}
 			}
 			fmt.Println("")
 
