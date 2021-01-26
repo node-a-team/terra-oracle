@@ -10,16 +10,16 @@ import (
 
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-	tenderOS "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/libs/log"
+	tenderOS "github.com/tendermint/tendermint/libs/os"
 
 	"github.com/terra-project/core/app"
 	"github.com/terra-project/core/types/util"
 
-//	"github.com/cosmos/cosmos-sdk/client"
+	//	"github.com/cosmos/cosmos-sdk/client"
+	flags "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	flags "github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	_ "github.com/terra-project/core/client/lcd/statik"
@@ -32,7 +32,7 @@ import (
 
 var (
 	version = "v0.0.5-alpha.2"
-	logger = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
+	logger  = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 )
 
 func main() {
@@ -41,7 +41,6 @@ func main() {
 
 	// Instantiate the codec for the command line application
 	cdc := app.MakeCodec()
-
 
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()
@@ -78,7 +77,6 @@ func main() {
 		os.Exit(1)
 	}
 
-
 }
 
 func svcCmd(cdc *amino.Codec) *cobra.Command {
@@ -111,36 +109,34 @@ func svcCmd(cdc *amino.Codec) *cobra.Command {
 		},
 	}
 
-//	svcCmd.Flags().String(oracle.FlagValidator, "", "")
-//	svcCmd.Flags().Float64(oracle.FlagSoftLimit, 0, "")
-//	svcCmd.Flags().Float64(oracle.FlagHardLimit, 0, "")
+	//	svcCmd.Flags().String(oracle.FlagValidator, "", "")
+	//	svcCmd.Flags().Float64(oracle.FlagSoftLimit, 0, "")
+	//	svcCmd.Flags().Float64(oracle.FlagHardLimit, 0, "")
 
 	svcCmd.Flags().String(cfg.ConfigPath, "", "Directory for config.toml")
 	svcCmd.MarkFlagRequired(cfg.ConfigPath)
 
 	svcCmd.Flags().StringP(cfg.VoteMode, "", "aggregate", "Vote mode (singular|aggregate)")
-        svcCmd.MarkFlagRequired(cfg.VoteMode)
+	svcCmd.MarkFlagRequired(cfg.VoteMode)
 
 	svcCmd = flags.PostCommands(svcCmd)[0]
 	svcCmd.MarkFlagRequired(flags.FlagFrom)
-//	svcCmd.MarkFlagRequired(oracle.FlagValidator)
+	//	svcCmd.MarkFlagRequired(oracle.FlagValidator)
 
 	return svcCmd
 }
 
-
 func versionCmd() *cobra.Command {
-        versionCmd := &cobra.Command{
-                Use:   "version",
-                Short: "Version check",
-                Run: func(cmd *cobra.Command, args []string)  {
+	versionCmd := &cobra.Command{
+		Use:   "version",
+		Short: "Version check",
+		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(version)
-                },
-        }
+		},
+	}
 
 	return versionCmd
 }
-
 
 func initConfig(cmd *cobra.Command) error {
 	home, err := cmd.PersistentFlags().GetString(cli.HomeFlag)

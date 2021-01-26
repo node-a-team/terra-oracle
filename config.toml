@@ -15,8 +15,35 @@ password = ""
 	[APIs.usd]
 	dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD"
 
+	[APIs.aud]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWAUD"
+	
+	[APIs.cad]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWCAD"
+	
+	[APIs.chf]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWCHF"
+	
+	[APIs.cny]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWCNY"
+	
 	[APIs.eur]
         dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWEUR"
+	
+	[APIs.gbp]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWGBP"
+	
+	[APIs.hkd]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWHKD"
+	
+	[APIs.inr]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWINR"
+	
+	[APIs.jpy]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWJPY"
+	
+	[APIs.sgd]
+        dunamu = "https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWSGD"
 
 	[APIs.mnt]
 	# API key is required
