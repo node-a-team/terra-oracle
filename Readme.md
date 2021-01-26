@@ -7,8 +7,8 @@ And make sure that you include ukrw in minimum gas price in terrad.toml to let u
 #### v0.0.5-alpha.3
 The prices of all stable coins come from the API of the `currencylayer.com`  
 Ready for Proposal #26: `{CNY, JPY, GBP, INR, CAD, CHF, HKD, AUD, SGD}`  
-Added Band API activation option to `Config.toml`(true/false)  
-Configuration change in config.toml  
+Added Band API activation option to `config.toml`(true/false)  
+Configuration change in `config.toml`  
 
 #### v0.0.5-alpha.2
 Add EUR Oracle vote.   
