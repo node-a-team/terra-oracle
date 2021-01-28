@@ -31,7 +31,7 @@ func NewPriceService() *PriceService {
 
 func (ps *PriceService) OnStart() error {
 	// TODO: gracefully quit go routine
-	go ps.coinoneToLuna(ps.Logger.With("market", "luna/krw"))
+	go ps.lunaToKrw(ps.Logger.With("market", "luna/krw"))
 	go ps.sdrToKrw(ps.Logger.With("market", "sdr/krw"))
 	go ps.stablesToKrw(ps.Logger.With("market", "stables/krw"))
 
