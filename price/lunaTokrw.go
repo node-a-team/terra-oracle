@@ -74,16 +74,16 @@ func (ps *PriceService) lunaToKrw(logger log.Logger) {
 
 			timestamp := time.Now().UTC().Unix()
 
-			logger.Info(fmt.Sprintf("Recent luna/krw: %s, timestamp: %d", recent.Price, recent.Timestamp))
+			logger.Info(fmt.Sprintf("Recent luna/krw: %s, timestamp: %d", price, timestamp))
 
 			// amount, ok := sdk.NewIntFromString(recent.Price)
-			decAmount, err := sdk.NewDecFromStr(recent.Price)
+			decAmount, err := sdk.NewDecFromStr(price)
 			// if !ok {
 			if err != nil {
 				logger.Error("Fail to parse price to Dec")
 			}
 			// ps.SetPrice("luna/krw", sdk.NewDecCoinFromCoin(sdk.NewCoin("krw", amount)))
-			ps.SetPrice("luna/krw", sdk.NewDecCoinFromDec("krw", decAmount), int64(recent.Timestamp))
+			ps.SetPrice("luna/krw", sdk.NewDecCoinFromDec("krw", decAmount), int64(timestamp))
 		}()
 	}
 }
