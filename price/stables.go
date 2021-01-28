@@ -55,7 +55,7 @@ func (ps *PriceService) stablesToKrw(logger log.Logger) {
 				return
 			}
 
-			var res APILayerResponse
+			res := APILayerResponse{}
 			err = json.Unmarshal(body, &res)
 			if err != nil {
 				logger.Error("Fail to unmarshal body", err.Error())
