@@ -15,6 +15,7 @@ import (
 	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
+// APILayerResponse response body from currencylayer
 type APILayerResponse struct {
 	Success   bool               `json:"success"`
 	Terms     string             `json:"terms"`
@@ -25,11 +26,10 @@ type APILayerResponse struct {
 }
 
 var (
-	stables = []string{"USD", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"}
+	stables = []string{"XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"}
 )
 
-func (ps *PriceService) stablesToKrw(logger log.Logger) {
-
+func (ps *PriceService) stablesToUsd(logger log.Logger) {
 	for {
 		func() {
 			defer func() {
@@ -62,41 +62,31 @@ func (ps *PriceService) stablesToKrw(logger log.Logger) {
 				return
 			}
 
-			// Set
 			for _, s := range stables {
-//				if s == "USD" || s == "MNT" || s == "EUR" {
-					setStablesPrice(s, res, ps, logger)
-//				} else {
-//					logger.Info(fmt.Sprintf("Ready %s/krw: %f", s, res.Quotes["USDKRW"] / res.Quotes["USD"+s]))
-//				}
+				setStablesPrice(s, res, ps, logger)
 			}
-			fmt.Println("")
 
+			fmt.Println("")
 		}()
 	}
 }
 
 func setStablesPrice(stable string, res APILayerResponse, ps *PriceService, logger log.Logger) {
-
-	// stable == "USD"
-	stableToKrw := res.Quotes["USDKRW"]
-
-	if stable != "USD" {
-		stableToKrw = res.Quotes["USDKRW"] / res.Quotes["USD"+stable]
+	stableToUsd := res.Quotes["USD"+stable]
+	if stable == "XDR" {
+		stable = "SDR"
 	}
 
+	price := strconv.FormatFloat(stableToUsd, 'f', -1, 64)
+	decAmount, err := sdk.NewDecFromStr(price)
+	if err != nil {
+		logger.Error("Fail to parse price to Dec", err.Error())
+		return
+	}
 
-//	} else {
-//		fmt.Println("Not Contains in stables: " +stables)
-//	}
+	decAmount = sdk.OneDec().Quo(decAmount)
+	logger.Info(fmt.Sprintf("Recent %s/usd: %s, timestamp: %d", strings.ToLower(stable), decAmount, res.Timestamp))
 
-        price := strconv.FormatFloat(stableToKrw, 'f', -1, 64)
-        logger.Info(fmt.Sprintf("Recent %s/krw: %s, timestamp: %d", strings.ToLower(stable), price, res.Timestamp))
-        decAmount, err := sdk.NewDecFromStr(price)
-        if err != nil {
-                logger.Error("Fail to parse price to Dec", err.Error())
-	        return
-        }
-        ps.SetPrice(strings.ToLower(stable) +"/krw", sdk.NewDecCoinFromDec("krw", decAmount), res.Timestamp)
+	// Set USD price of stables
+	ps.SetPrice(strings.ToLower(stable)+"/usd", sdk.NewDecCoinFromDec("usd", decAmount), res.Timestamp)
 }
-

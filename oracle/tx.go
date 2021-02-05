@@ -2,27 +2,27 @@ package oracle
 
 import (
 	"crypto/rand"
-//	"encoding/hex"
+	//	"encoding/hex"
 	"errors"
 	"fmt"
 	operating "os"
-	"time"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-//	"github.com/cosmos/cosmos-sdk/client/keys"
+	//	"github.com/cosmos/cosmos-sdk/client/keys"
 	utils "github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-//	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	//	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 
 	client "github.com/tendermint/tendermint/rpc/client/http"
 
-	"github.com/terra-project/core/x/oracle"
 	cfg "github.com/node-a-team/terra-oracle/config"
+	"github.com/terra-project/core/x/oracle"
 )
 
 const (
@@ -32,7 +32,7 @@ const (
 )
 
 var (
-	voteMode string
+	voteMode               string
 	salt, exchangeRatesStr = []string{"1234", ""}, []string{"", ""}
 )
 
@@ -55,27 +55,27 @@ func (os *OracleService) init() error {
 	if voteMode != "singular" && voteMode != "aggregate" {
 		return errors.New("The vote mode must be set to \"singular\" or \"aggregate\"")
 	}
-/*
-	fromName := os.cliCtx.GetFromName()
-	_passphrase, err := keys.GetPassphrase(fromName)
-	if err != nil {
-		return err
-	}
-	os.passphrase = _passphrase
-*/
+	/*
+		fromName := os.cliCtx.GetFromName()
+		_passphrase, err := keys.GetPassphrase(fromName)
+		if err != nil {
+			return err
+		}
+		os.passphrase = _passphrase
+	*/
 
-//	os.passphrase =cfg.Config.Feeder.Password
+	//	os.passphrase =cfg.Config.Feeder.Password
 
-/*
-	os.changeRateSoftLimit = cfg.Config.Options.ChangeRateLimit.Soft
-	if os.changeRateSoftLimit < 0 {
-		return fmt.Errorf("Soft limit should be positive")
-	}
-	os.changeRateHardLimit = cfg.Config.Options.ChangeRateLimit.Hard
-	if os.changeRateHardLimit < 0 {
-		return fmt.Errorf("Hard limit should be positive")
-	}
-*/
+	/*
+		os.changeRateSoftLimit = cfg.Config.Options.ChangeRateLimit.Soft
+		if os.changeRateSoftLimit < 0 {
+			return fmt.Errorf("Soft limit should be positive")
+		}
+		os.changeRateHardLimit = cfg.Config.Options.ChangeRateLimit.Hard
+		if os.changeRateHardLimit < 0 {
+			return fmt.Errorf("Hard limit should be positive")
+		}
+	*/
 	return nil
 }
 
@@ -89,15 +89,15 @@ func (os *OracleService) txRoutine() {
 
 	for {
 		func() {
-/*
-			defer func() {
-				if r := recover(); r != nil {
-					os.Logger.Error("Unknown error", r)
-				}
+			/*
+				defer func() {
+					if r := recover(); r != nil {
+						os.Logger.Error("Unknown error", r)
+					}
 
-				time.Sleep(1 * time.Second)
-			}()
-*/
+					time.Sleep(1 * time.Second)
+				}()
+			*/
 			time.Sleep(1 * time.Second)
 
 			status, err := httpClient.Status()
@@ -122,7 +122,6 @@ func (os *OracleService) txRoutine() {
 			if abort {
 				operating.Exit(1)
 			}
-
 
 			os.Logger.Info(fmt.Sprintf("Try to send vote msg (including prevote for next vote msg)"))
 
@@ -169,69 +168,67 @@ func (os *OracleService) makeSingularVoteMsgs(denoms []string) ([]sdk.Msg, error
 		return nil, fmt.Errorf("Invalid validator: %s", err.Error())
 	}
 
+	if os.prevoteInited {
 
-        if os.prevoteInited {
-
-                // voteMsgs
+		// voteMsgs
 		for _, denom := range denoms {
-	                price := os.preLunaPrices[denom]
+			price := os.preLunaPrices[denom]
 
-	                salt := os.salts[denom]
-	                if len(salt) == 0 {
-	                        // It can occur before the first prevote was sent
-	                        // So, this error may be temporary
-	                        return nil, fmt.Errorf("Fail to get salt: %s", err.Error())
-	                }
+			salt := os.salts[denom]
+			if len(salt) == 0 {
+				// It can occur before the first prevote was sent
+				// So, this error may be temporary
+				return nil, fmt.Errorf("Fail to get salt: %s", err.Error())
+			}
 
-	                vote := oracle.NewMsgExchangeRateVote(price.Amount, salt, "u"+denom, feeder, validator)
-	                msgs = append(msgs, vote)
-	        }
+			vote := oracle.NewMsgExchangeRateVote(price.Amount, salt, "u"+denom, feeder, validator)
+			msgs = append(msgs, vote)
+		}
 
-	        for _, denom := range denoms {
-	                price := os.lunaPrices[denom]
-	                if price.Denom != denom {
-	                        return nil, errors.New("Price is not initialized")
-	                }
+		for _, denom := range denoms {
+			price := os.lunaPrices[denom]
+			if price.Denom != denom {
+				return nil, errors.New("Price is not initialized")
+			}
 
-	                salt, err := generateRandomString(4)
-	                if err != nil {
-	                        return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
-	                }
-	                os.salts[denom] = salt
+			salt, err := generateRandomString(4)
+			if err != nil {
+				return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
+			}
+			os.salts[denom] = salt
 
-	                voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
-	                if err != nil {
-	                        return nil, fmt.Errorf("Fail to vote hash: %s", err.Error())
-	                }
+			voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
+			if err != nil {
+				return nil, fmt.Errorf("Fail to vote hash: %s", err.Error())
+			}
 
-	                prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
-	                msgs = append(msgs, prevote)
+			prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
+			msgs = append(msgs, prevote)
 
-	                os.preLunaPrices[denom] = os.lunaPrices[denom]
-	        }
+			os.preLunaPrices[denom] = os.lunaPrices[denom]
+		}
 
-        }
+	}
 
-        // preVote
-        for _, denom := range denoms {
-                price := os.lunaPrices[denom]
-                if price.Denom != denom {
-                        return nil, errors.New("Price is not initialized")
-                }
+	// preVote
+	for _, denom := range denoms {
+		price := os.lunaPrices[denom]
+		if price.Denom != denom {
+			return nil, errors.New("Price is not initialized")
+		}
 
-                salt, err := generateRandomString(4)
-                if err != nil {
-                        return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
-                }
-                os.salts[denom] = salt
-                voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
+		salt, err := generateRandomString(4)
+		if err != nil {
+			return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
+		}
+		os.salts[denom] = salt
+		voteHash := oracle.GetVoteHash(salt, price.Amount, "u"+denom, validator)
 
-                prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
-                msgs = append(msgs, prevote)
+		prevote := oracle.NewMsgExchangeRatePrevote(voteHash, "u"+denom, feeder, validator)
+		msgs = append(msgs, prevote)
 
-                os.preLunaPrices[denom] = os.lunaPrices[denom]
-        }
-
+		os.preLunaPrices[denom] = os.lunaPrices[denom]
+	}
 
 	os.prevoteInited = true
 
@@ -241,56 +238,55 @@ func (os *OracleService) makeSingularVoteMsgs(denoms []string) ([]sdk.Msg, error
 // ----------------------------------------------- aggregate
 func (os *OracleService) makeAggregateVoteMsgs(denoms []string) ([]sdk.Msg, error) {
 
-        msgs := make([]sdk.Msg, 0)
+	msgs := make([]sdk.Msg, 0)
 
-        feeder := os.cliCtx.GetFromAddress()
+	feeder := os.cliCtx.GetFromAddress()
 
-        validator, err := sdk.ValAddressFromBech32(cfg.Config.Validator.OperatorAddr)
-        if err != nil {
-                return nil, fmt.Errorf("Invalid validator: %s", err.Error())
-        }
+	validator, err := sdk.ValAddressFromBech32(cfg.Config.Validator.OperatorAddr)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid validator: %s", err.Error())
+	}
 
 	if os.prevoteInited {
 
 		// voteMsgs
-	        aggregateVote := oracle.NewMsgAggregateExchangeRateVote(salt[0], exchangeRatesStr[0], feeder, validator)
+		aggregateVote := oracle.NewMsgAggregateExchangeRateVote(salt[0], exchangeRatesStr[0], feeder, validator)
 		msgs = append(msgs, aggregateVote)
 	}
 
 	// preVote
 	salt[1], err = generateRandomString(4)
-        if err != nil {
-                return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
-        }
+	if err != nil {
+		return nil, fmt.Errorf("Fail to generate salt: %s", err.Error())
+	}
 
 	for i, denom := range denoms {
 
-                price := os.lunaPrices[denom]
-                if price.Denom != denom {
-                        return nil, errors.New("Price is not initialized")
-                }
+		price := os.lunaPrices[denom]
+		if price.Denom != denom {
+			return nil, errors.New("Price is not initialized")
+		}
 
-                if i == len(denoms)-1 {
-                        exchangeRatesStr[1] = exchangeRatesStr[1] +fmt.Sprint(price)
-                } else {
-                        exchangeRatesStr[1] = exchangeRatesStr[1] +fmt.Sprint(price) +","
-                }
+		if i == len(denoms)-1 {
+			exchangeRatesStr[1] = exchangeRatesStr[1] + fmt.Sprint(price)
+		} else {
+			exchangeRatesStr[1] = exchangeRatesStr[1] + fmt.Sprint(price) + ","
+		}
 
-		exchangeRatesStr[1] = strings.Replace(exchangeRatesStr[1], price.Denom , "u" +price.Denom, -1)
-        }
+		exchangeRatesStr[1] = strings.Replace(exchangeRatesStr[1], price.Denom, "u"+price.Denom, -1)
+	}
 
-        aggregateVoteHash := oracle.GetAggregateVoteHash(salt[1], exchangeRatesStr[1], validator)
-        aggregatePreVote := oracle.NewMsgAggregateExchangeRatePrevote(aggregateVoteHash, feeder, validator)
-        msgs = append(msgs, aggregatePreVote)
-
+	aggregateVoteHash := oracle.GetAggregateVoteHash(salt[1], exchangeRatesStr[1], validator)
+	aggregatePreVote := oracle.NewMsgAggregateExchangeRatePrevote(aggregateVoteHash, feeder, validator)
+	msgs = append(msgs, aggregatePreVote)
 
 	os.prevoteInited = true
 
-        salt[0] = salt[1]
+	salt[0] = salt[1]
 	exchangeRatesStr[0] = exchangeRatesStr[1]
 	exchangeRatesStr[1] = ""
 
-        return msgs, nil
+	return msgs, nil
 }
 
 func (os *OracleService) calculatePrice() (abort bool, err error) {
@@ -299,121 +295,108 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 	if lunaToKrw.Denom != "krw" {
 		return false, errors.New("Can't get luna/krw")
 	}
-	sdrToKrw := os.ps.GetPrice("sdr/krw")
-        if sdrToKrw.Denom != "krw" {
-                return false, errors.New("Can't get sdr/krw")
-        }
-	usdToKrw := os.ps.GetPrice("usd/krw")
-	if usdToKrw.Denom != "krw" {
-		return false, errors.New("Can't get usd/krw")
+	lunaToUsd := os.ps.GetPrice("luna/usd")
+	if lunaToUsd.Denom != "usd" {
+		return false, errors.New("Can't get luna/usd")
 	}
-	eurToKrw := os.ps.GetPrice("eur/krw")
-        if eurToKrw.Denom != "krw" {
-                return false, errors.New("Can't get eur/krw")
-        }
-	mntToKrw := os.ps.GetPrice("mnt/krw")
-        if mntToKrw.Denom != "krw" {
-                return false, errors.New("Can't get mnt/krw")
-        }
-	cnyToKrw := os.ps.GetPrice("cny/krw")
-        if cnyToKrw.Denom != "krw" {
-                return false, errors.New("Can't get cny/krw")
-        }
-	jpyToKrw := os.ps.GetPrice("jpy/krw")
-        if jpyToKrw.Denom != "krw" {
-                return false, errors.New("Can't get jpy/krw")
-        }
-	gbpToKrw := os.ps.GetPrice("gbp/krw")
-        if gbpToKrw.Denom != "krw" {
-                return false, errors.New("Can't get gbp/krw")
-        }
-	inrToKrw := os.ps.GetPrice("inr/krw")
-        if inrToKrw.Denom != "krw" {
-                return false, errors.New("Can't get inr/krw")
-        }
-	cadToKrw := os.ps.GetPrice("cad/krw")
-        if cadToKrw.Denom != "krw" {
-                return false, errors.New("Can't get cad/krw")
-        }
-	chfToKrw := os.ps.GetPrice("chf/krw")
-        if chfToKrw.Denom != "krw" {
-                return false, errors.New("Can't get chf/krw")
-        }
-	hkdToKrw := os.ps.GetPrice("hkd/krw")
-        if hkdToKrw.Denom != "krw" {
-                return false, errors.New("Can't get hkd/krw")
-        }
-	sgdToKrw := os.ps.GetPrice("sgd/krw")
-        if sgdToKrw.Denom != "krw" {
-                return false, errors.New("Can't get sgd/krw")
-        }
-	audToKrw := os.ps.GetPrice("aud/krw")
-        if audToKrw.Denom != "krw" {
-                return false, errors.New("Can't get aud/krw")
-        }
-
-
+	sdrToUsd := os.ps.GetPrice("sdr/usd")
+	if sdrToUsd.Denom != "usd" {
+		return false, errors.New("Can't get sdr/usd")
+	}
+	eurToUsd := os.ps.GetPrice("eur/usd")
+	if eurToUsd.Denom != "usd" {
+		return false, errors.New("Can't get eur/usd")
+	}
+	mntToUsd := os.ps.GetPrice("mnt/usd")
+	if mntToUsd.Denom != "usd" {
+		return false, errors.New("Can't get mnt/usd")
+	}
+	cnyToUsd := os.ps.GetPrice("cny/usd")
+	if cnyToUsd.Denom != "usd" {
+		return false, errors.New("Can't get cny/usd")
+	}
+	jpyToUsd := os.ps.GetPrice("jpy/usd")
+	if jpyToUsd.Denom != "usd" {
+		return false, errors.New("Can't get jpy/usd")
+	}
+	gbpToUsd := os.ps.GetPrice("gbp/usd")
+	if gbpToUsd.Denom != "usd" {
+		return false, errors.New("Can't get gbp/usd")
+	}
+	inrToUsd := os.ps.GetPrice("inr/usd")
+	if inrToUsd.Denom != "usd" {
+		return false, errors.New("Can't get inr/usd")
+	}
+	cadToUsd := os.ps.GetPrice("cad/usd")
+	if cadToUsd.Denom != "usd" {
+		return false, errors.New("Can't get cad/usd")
+	}
+	chfToUsd := os.ps.GetPrice("chf/usd")
+	if chfToUsd.Denom != "usd" {
+		return false, errors.New("Can't get chf/usd")
+	}
+	hkdToUsd := os.ps.GetPrice("hkd/usd")
+	if hkdToUsd.Denom != "usd" {
+		return false, errors.New("Can't get hkd/usd")
+	}
+	sgdToUsd := os.ps.GetPrice("sgd/usd")
+	if sgdToUsd.Denom != "usd" {
+		return false, errors.New("Can't get sgd/usd")
+	}
+	audToUsd := os.ps.GetPrice("aud/usd")
+	if audToUsd.Denom != "usd" {
+		return false, errors.New("Can't get aud/usd")
+	}
 
 	// If sdrToKrw is 0, this will panic
-	lunaToSdrAmount := lunaToKrw.Amount.Quo(sdrToKrw.Amount)
-        lunaToSdr := sdk.NewDecCoinFromDec("sdr", lunaToSdrAmount)
+	lunaToSdrAmount := lunaToUsd.Amount.Quo(sdrToUsd.Amount)
+	lunaToSdr := sdk.NewDecCoinFromDec("sdr", lunaToSdrAmount)
 
-	lunaToUsdAmount := lunaToKrw.Amount.Quo(usdToKrw.Amount)
-	lunaToUsd := sdk.NewDecCoinFromDec("usd", lunaToUsdAmount)
+	lunaToEurAmount := lunaToUsd.Amount.Quo(eurToUsd.Amount)
+	lunaToEur := sdk.NewDecCoinFromDec("eur", lunaToEurAmount)
 
-        lunaToEurAmount := lunaToKrw.Amount.Quo(eurToKrw.Amount)
-        lunaToEur := sdk.NewDecCoinFromDec("eur", lunaToEurAmount)
+	lunaToMntAmount := lunaToUsd.Amount.Quo(mntToUsd.Amount)
+	lunaToMnt := sdk.NewDecCoinFromDec("mnt", lunaToMntAmount)
 
-	lunaToMntAmount := lunaToKrw.Amount.Quo(mntToKrw.Amount)
-	lunaToMnt :=  sdk.NewDecCoinFromDec("mnt", lunaToMntAmount)
+	lunaToCnyAmount := lunaToUsd.Amount.Quo(cnyToUsd.Amount)
+	lunaToCny := sdk.NewDecCoinFromDec("cny", lunaToCnyAmount)
 
-	lunaToCnyAmount := lunaToKrw.Amount.Quo(cnyToKrw.Amount)
-        lunaToCny :=  sdk.NewDecCoinFromDec("cny", lunaToCnyAmount)
+	lunaToJpyAmount := lunaToUsd.Amount.Quo(jpyToUsd.Amount)
+	lunaToJpy := sdk.NewDecCoinFromDec("jpy", lunaToJpyAmount)
 
-	lunaToJpyAmount := lunaToKrw.Amount.Quo(jpyToKrw.Amount)
-        lunaToJpy :=  sdk.NewDecCoinFromDec("jpy", lunaToJpyAmount)
+	lunaToGbpAmount := lunaToUsd.Amount.Quo(gbpToUsd.Amount)
+	lunaToGbp := sdk.NewDecCoinFromDec("gbp", lunaToGbpAmount)
 
-	lunaToGbpAmount := lunaToKrw.Amount.Quo(gbpToKrw.Amount)
-        lunaToGbp :=  sdk.NewDecCoinFromDec("gbp", lunaToGbpAmount)
+	lunaToInrAmount := lunaToUsd.Amount.Quo(inrToUsd.Amount)
+	lunaToInr := sdk.NewDecCoinFromDec("inr", lunaToInrAmount)
 
-	lunaToInrAmount := lunaToKrw.Amount.Quo(inrToKrw.Amount)
-        lunaToInr :=  sdk.NewDecCoinFromDec("inr", lunaToInrAmount)
+	lunaToCadAmount := lunaToUsd.Amount.Quo(cadToUsd.Amount)
+	lunaToCad := sdk.NewDecCoinFromDec("cad", lunaToCadAmount)
 
-	lunaToCadAmount := lunaToKrw.Amount.Quo(cadToKrw.Amount)
-        lunaToCad :=  sdk.NewDecCoinFromDec("cad", lunaToCadAmount)
+	lunaToChfAmount := lunaToUsd.Amount.Quo(chfToUsd.Amount)
+	lunaToChf := sdk.NewDecCoinFromDec("chf", lunaToChfAmount)
 
-	lunaToChfAmount := lunaToKrw.Amount.Quo(chfToKrw.Amount)
-        lunaToChf :=  sdk.NewDecCoinFromDec("chf", lunaToChfAmount)
+	lunaToHkdAmount := lunaToUsd.Amount.Quo(hkdToUsd.Amount)
+	lunaToHkd := sdk.NewDecCoinFromDec("hkd", lunaToHkdAmount)
 
-	lunaToHkdAmount := lunaToKrw.Amount.Quo(hkdToKrw.Amount)
-        lunaToHkd :=  sdk.NewDecCoinFromDec("hkd", lunaToHkdAmount)
+	lunaToSgdAmount := lunaToUsd.Amount.Quo(sgdToUsd.Amount)
+	lunaToSgd := sdk.NewDecCoinFromDec("sgd", lunaToSgdAmount)
 
-	lunaToSgdAmount := lunaToKrw.Amount.Quo(sgdToKrw.Amount)
-        lunaToSgd :=  sdk.NewDecCoinFromDec("sgd", lunaToSgdAmount)
+	lunaToAudAmount := lunaToUsd.Amount.Quo(audToUsd.Amount)
+	lunaToAud := sdk.NewDecCoinFromDec("aud", lunaToAudAmount)
 
-	lunaToAudAmount := lunaToKrw.Amount.Quo(audToKrw.Amount)
-        lunaToAud :=  sdk.NewDecCoinFromDec("aud", lunaToAudAmount)
-
-
-
-
-
-
-
-	os.Logger.Info(fmt.Sprintf("sdr/krw: %s", sdrToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("usd/krw: %s", usdToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("eur/krw: %s", eurToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("mnt/krw: %s", mntToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("cny/krw: %s", cnyToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("jpy/krw: %s", jpyToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("gbp/krw: %s", gbpToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("inr/krw: %s", inrToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("cad/krw: %s", cadToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("chf/krw: %s", chfToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("hkd/krw: %s", hkdToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("sgd/krw: %s", sgdToKrw.String()))
-	os.Logger.Info(fmt.Sprintf("aud/krw: %s", audToKrw.String()))
-
+	os.Logger.Info(fmt.Sprintf("sdr/usd: %s", sdrToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("eur/usd: %s", eurToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("mnt/usd: %s", mntToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("cny/usd: %s", cnyToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("jpy/usd: %s", jpyToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("gbp/usd: %s", gbpToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("inr/usd: %s", inrToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("cad/usd: %s", cadToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("chf/usd: %s", chfToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("hkd/usd: %s", hkdToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("sgd/usd: %s", sgdToUsd.String()))
+	os.Logger.Info(fmt.Sprintf("aud/usd: %s", audToUsd.String()))
 
 	os.Logger.Info(fmt.Sprintf("luna/krw: %s", lunaToKrw.String()))
 	os.Logger.Info(fmt.Sprintf("luna/sdr: %s", lunaToSdr.String()))
@@ -429,7 +412,6 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 	os.Logger.Info(fmt.Sprintf("luna/hkd: %s", lunaToHkd.String()))
 	os.Logger.Info(fmt.Sprintf("luna/sgd: %s", lunaToSgd.String()))
 	os.Logger.Info(fmt.Sprintf("luna/aud: %s", lunaToAud.String()))
-
 
 	os.lunaPrices["krw"] = lunaToKrw
 	os.lunaPrices["sdr"] = lunaToSdr

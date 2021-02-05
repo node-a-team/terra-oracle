@@ -32,12 +32,13 @@ func NewPriceService() *PriceService {
 func (ps *PriceService) OnStart() error {
 	// TODO: gracefully quit go routine
 	go ps.lunaToKrw(ps.Logger.With("market", "luna/krw"))
-	go ps.sdrToKrw(ps.Logger.With("market", "sdr/krw"))
-	go ps.stablesToKrw(ps.Logger.With("market", "stables/krw"))
+	go ps.lunaToUsd(ps.Logger.With("market", "luna/usd"))
+	// go ps.sdrToUsd(ps.Logger.With("market", "sdr/usd"))
+	go ps.stablesToUsd(ps.Logger.With("market", "stables/usd"))
 
 	// for Band APIs
 	go ps.bandLunaToKrw(ps.Logger.With("band", "luna/krw"))
-	go ps.fxsToKrw(ps.Logger.With("band", "fxs/krw"))
+	go ps.fxsToUsd(ps.Logger.With("band", "fxs/krw"))
 	return nil
 }
 

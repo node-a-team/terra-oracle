@@ -29,10 +29,10 @@ type Result struct {
 	ResolveTime int64   `json:"resolve_time,string"`
 }
 
-func (ps *PriceService) fxsToKrw(logger log.Logger) {
+func (ps *PriceService) fxsToUsd(logger log.Logger) {
 	for {
 		if !cfg.Config.APIs.Band.Active {
-			logger.Info("Warning APIs.Band.Active is false in Config.toml. Let's exit the fxsToKrw().")
+			logger.Info("Warning APIs.Band.Active is false in Config.toml. Let's exit the fxsToUsd().")
 			break
 		}
 
@@ -48,7 +48,7 @@ func (ps *PriceService) fxsToKrw(logger log.Logger) {
 			req, err := http.NewRequest(
 				"POST",
 				cfg.Config.APIs.Band.Band+"/oracle/request_prices",
-				bytes.NewBuffer([]byte(`{"symbols":["KRW","XDR","MNT"],"min_count":3,"ask_count":4}`)),
+				bytes.NewBuffer([]byte(`{"symbols":["LUNA", "XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"],"min_count":3,"ask_count":4}`)),
 			)
 			req.Header.Set("Content-Type", "application/json")
 
@@ -73,33 +73,24 @@ func (ps *PriceService) fxsToKrw(logger log.Logger) {
 				return
 			}
 
-			rates := map[string]PriceWithTimestamp{}
+			logs := ""
 			for _, rate := range res.Result {
 				symbol := strings.ToLower(rate.Symbol)
 				if symbol == "xdr" {
 					symbol = "sdr"
 				}
-				decAmount, err := sdk.NewDecFromStr(strconv.FormatFloat(rate.Multiplier/rate.Px, 'f', -1, 64))
+
+				decAmount, err := sdk.NewDecFromStr(strconv.FormatFloat(rate.Px/rate.Multiplier, 'f', -1, 64))
 				if err != nil {
 					logger.Error("Fail to parse price to Dec", err.Error())
 					return
 				}
-				rates[symbol] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("krw", decAmount), Timestamp: rate.ResolveTime}
+
+				ps.SetPrice(symbol+"/usd", sdk.NewDecCoinFromDec("usd", decAmount), rate.ResolveTime)
+				logs += fmt.Sprintf(" [%s/usd:%v,timestamp:%d] ", symbol, decAmount, rate.ResolveTime)
 			}
 
-			rates["mnt"] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("krw", rates["krw"].Px.Amount.Quo(rates["mnt"].Px.Amount)), Timestamp: rates["mnt"].Timestamp}
-			rates["sdr"] = PriceWithTimestamp{Px: sdk.NewDecCoinFromDec("krw", rates["krw"].Px.Amount.Quo(rates["sdr"].Px.Amount)), Timestamp: rates["sdr"].Timestamp}
-
-			ps.SetPrice("usd/krw", rates["krw"].Px, rates["krw"].Timestamp)
-			ps.SetPrice("mnt/krw", rates["mnt"].Px, rates["mnt"].Timestamp)
-			ps.SetPrice("sdr/krw", rates["sdr"].Px, rates["sdr"].Timestamp)
-
-			logger.Info(
-				fmt.Sprintf("Recent [[usd/krw:%v,timestamp:%d], [mnt/krw:%v,timestamp:%d], [sdr/krw:%v,timestamp:%d]]",
-					rates["krw"].Px, rates["krw"].Timestamp,
-					rates["mnt"].Px, rates["mnt"].Timestamp,
-					rates["sdr"].Px, rates["sdr"].Timestamp,
-				))
+			logger.Info(fmt.Sprintf("Recent [%s]", logs))
 		}()
 	}
 }
