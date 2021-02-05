@@ -5,18 +5,20 @@ import (
 
 	"github.com/tendermint/go-amino"
 
-//	cmn "github.com/tendermint/tendermint/libs/common"
+	//	cmn "github.com/tendermint/tendermint/libs/common"
 	service "github.com/tendermint/tendermint/libs/service"
 
 	"github.com/node-a-team/terra-oracle/price"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-//	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+
+	//	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 const VotePeriod = 5
+
 //const VotePeriod = 5
 
 type OracleService struct {
@@ -24,13 +26,13 @@ type OracleService struct {
 	ps  *price.PriceService
 	cdc *amino.Codec
 
-	passphrase          string
-	txBldr              authtxb.TxBuilder
-	cliCtx              context.CLIContext
-	lunaPrices          map[string]sdk.DecCoin
-	prevoteInited       bool
-//	changeRateSoftLimit float64
-//	changeRateHardLimit float64
+	passphrase    string
+	txBldr        authtxb.TxBuilder
+	cliCtx        context.CLIContext
+	lunaPrices    map[string]sdk.DecCoin
+	prevoteInited bool
+	//	changeRateSoftLimit float64
+	//	changeRateHardLimit float64
 
 	salts         map[string]string
 	preLunaPrices map[string]sdk.DecCoin
@@ -62,7 +64,6 @@ func (os *OracleService) OnStart() error {
 	// Wait a second until price service fetchs price initially
 	time.Sleep(3 * time.Second)
 
-//	go os.txRoutine()
 	go os.txRoutine()
 
 	return nil

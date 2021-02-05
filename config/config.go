@@ -31,6 +31,9 @@ type configType struct {
 			Krw struct {
 				Coinone string `json:"coinone"`
 			}
+			Usd struct {
+				Binance string `json:"binance"`
+			}
 		}
 
 		Stables struct {
@@ -42,8 +45,8 @@ type configType struct {
 		}
 
 		Band struct {
-			Active bool `json:"active"`
-			Band string `json:"band"`
+			Active bool   `json:"active"`
+			Band   string `json:"band"`
 		}
 	}
 	Options struct {

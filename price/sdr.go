@@ -14,7 +14,7 @@ import (
 	cfg "github.com/node-a-team/terra-oracle/config"
 )
 
-func (ps *PriceService) sdrToKrw(logger log.Logger) {
+func (ps *PriceService) sdrToUsd(logger log.Logger) {
 	for {
 		func() {
 			defer func() {
@@ -40,10 +40,10 @@ func (ps *PriceService) sdrToKrw(logger log.Logger) {
 				return
 			}
 
-			re, _ := regexp.Compile("Korean won[\\s]+[0-9.,]+")
+			re, _ := regexp.Compile("U.S. dollar[\\s]+[0-9.,]+")
 			strs := re.FindAllString(string(body), 2)
 			if len(strs) < 2 {
-				logger.Error("Fail to find sdr-won")
+				logger.Error("Fail to find sdr-usd")
 				return
 			}
 			re, _ = regexp.Compile("[0-9.,]+")
@@ -52,14 +52,14 @@ func (ps *PriceService) sdrToKrw(logger log.Logger) {
 
 			timestamp := time.Now().UTC().Unix()
 
-			logger.Info(fmt.Sprintf("Recent sdr/krw: %s, timestamp: %d", price, timestamp))
+			logger.Info(fmt.Sprintf("Recent sdr/usd: %s, timestamp: %d", price, timestamp))
 
 			decAmount, err := sdk.NewDecFromStr(price)
 			if err != nil {
 				logger.Error("Fail to parse price to Dec", err.Error())
 				return
 			}
-			ps.SetPrice("sdr/krw", sdk.NewDecCoinFromDec("krw", decAmount), timestamp)
+			ps.SetPrice("sdr/usd", sdk.NewDecCoinFromDec("usd", decAmount), timestamp)
 		}()
 	}
 }

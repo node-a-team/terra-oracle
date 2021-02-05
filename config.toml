@@ -12,6 +12,9 @@ password = ""
 	[APIs.Luna.Krw]
         coinone = "https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna"
 
+        [APIs.Luna.Usd]
+        binance = "https://api.binance.com/api/v3/ticker/price?symbol=LUNAUSDT"
+
         [APIs.Stables]
         # API key is required
         # https://currencylayer.com/product
