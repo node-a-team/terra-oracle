@@ -4,12 +4,15 @@ By default, Tendermint waits 10 seconds for the transaction to be committed. But
 And make sure that you include ukrw in minimum gas price in terrad.toml to let users pay the fee by ukrw.  
 
 ## Changelog
+#### v0.0.5-alpha.4
+Update price server is using USD quote instead KRW & also seperate KRW from the USD price(by <strong>@YunSuk-Yeo</strong>)   
+Code Simplification(`oracle/tx.go`)   
+
 #### v0.0.5-alpha.3
 The prices of all stable coins come from the API of the `currencylayer.com`  
 Add vote list for Proposal#26: `{CNY, JPY, GBP, INR, CAD, CHF, HKD, AUD, SGD}`  
 Added Band API activation option to `config.toml`(true/false)  
 Configuration change in `config.toml`  
-
 
 #### v0.0.5-alpha.2
 Add EUR Oracle vote.   
