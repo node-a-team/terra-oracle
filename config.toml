@@ -25,7 +25,7 @@ password = ""
 
         [APIs.band]
         active = true # true/false
-        band = "https://poa-api.bandchain.org"
+        band = "https://terra-lcd.bandchain.org"
 
 [Options]
 interval = 200

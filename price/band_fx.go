@@ -48,7 +48,7 @@ func (ps *PriceService) fxsToUsd(logger log.Logger) {
 			req, err := http.NewRequest(
 				"POST",
 				cfg.Config.APIs.Band.Band+"/oracle/request_prices",
-				bytes.NewBuffer([]byte(`{"symbols":["LUNA", "XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"],"min_count":3,"ask_count":4}`)),
+				bytes.NewBuffer([]byte(`{"symbols":["LUNA", "XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"],"min_count":10,"ask_count":16}`)),
 			)
 			req.Header.Set("Content-Type", "application/json")
 
