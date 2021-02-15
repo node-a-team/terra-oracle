@@ -78,10 +78,7 @@ type BandResult struct {
 }
 
 type LunaPriceCallData struct {
-	Exchanges   []string
-	BaseSymbol  string
-	QuoteSymbol string
-	Multiplier  uint64
+	Multiplier uint64
 }
 
 type OrderBook struct {
@@ -103,9 +100,9 @@ func (lpcd *LunaPriceCallData) toBytes() []byte {
 }
 
 var (
-	MULTIPLIER           = uint64(1000000)
-	LUNA_PRICE_CALLDATA  = LunaPriceCallData{Exchanges: []string{"coinone", "bithumb", "huobipro", "binance"}, BaseSymbol: "LUNA", QuoteSymbol: "KRW", Multiplier: MULTIPLIER}
-	LUNA_PRICE_END_POINT = fmt.Sprintf("/oracle/request_search?oid=22&calldata=%x&min_count=3&ask_count=4", LUNA_PRICE_CALLDATA.toBytes())
+	MULTIPLIER           = uint64(1000000000)
+	LUNA_PRICE_CALLDATA  = LunaPriceCallData{Multiplier: MULTIPLIER}
+	LUNA_PRICE_END_POINT = fmt.Sprintf("/oracle/request_search?oid=13&calldata=%x&min_count=10&ask_count=16", LUNA_PRICE_CALLDATA.toBytes())
 )
 
 func (ps *PriceService) bandLunaToKrw(logger log.Logger) {
@@ -149,7 +146,7 @@ func (ps *PriceService) bandLunaToKrw(logger log.Logger) {
 
 			// Find median
 			prices := []float64{}
-			for _, order := range lp.OrderBooks {
+			for _, order := range lp.OrderBooks[:4] {
 				prices = append(prices, float64(order.Mid))
 			}
 			sort.Float64s(prices)
