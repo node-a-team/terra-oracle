@@ -5,7 +5,7 @@ And make sure that you include ukrw in minimum gas price in terrad.toml to let u
 
 ## Changelog
 #### v0.0.5-alpha.5
-Patch terra oracle to use data from band guanyu mainnet(by <strong>@Benzbeeb</strong>)
+Patch terra oracle to use data from band guanyu mainnet(by <strong>@Benzbeeb</strong>)  
 Make sure the band's API is <strong>https://terra-lcd.bandchain.org</strong> in `config.toml`.
 
 #### v0.0.5-alpha.4
