@@ -6,7 +6,7 @@ And make sure that you include ukrw in minimum gas price in terrad.toml to let u
 ## Changelog
 #### v0.0.5-alpha.5
 Patch terra oracle to use data from band guanyu mainnet(by <strong>@Benzbeeb</strong>)  
-Make sure the band's API is <strong>https://terra-lcd.bandchain.org</strong> in `config.toml`.
+Make sure the band's API is `https://terra-lcd.bandchain.org` in `config.toml`.
 
 #### v0.0.5-alpha.4
 Update price server is using USD quote instead KRW & also seperate KRW from the USD price(by <strong>@YunSuk-Yeo</strong>)   
@@ -69,7 +69,7 @@ cd $HOME/terra-oracle
 go install ./cmd/terra-oracle
 
 terra-oracle version
-## v0.0.5-alpha.3
+## v0.0.5-alpha.5
 ```
 
 ## Set your basic config for cli.
