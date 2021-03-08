@@ -5,7 +5,7 @@ And make sure that you include ukrw in minimum gas price in terrad.toml to let u
 
 ## Changelog
 #### v0.0.5-alpha.6
-Add vote list for Proposal#38: `{THB}`
+Add vote list for Proposal#38: `{THB}`  
 Configuration change in `config.toml`
 
 
