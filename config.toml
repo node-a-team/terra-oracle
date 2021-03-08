@@ -9,8 +9,9 @@ operatorAddr = "terravaloper~"
 password = ""
 
 [APIs]
-	[APIs.Luna.Krw]
+        [APIs.Luna.Krw]
         coinone = "https://tb.coinone.co.kr/api/v1/tradehistory/recent/?market=krw&target=luna"
+        bithumb = "https://api.bithumb.com/public/ticker/luna_krw"
 
         [APIs.Luna.Usd]
         binance = "https://api.binance.com/api/v3/ticker/price?symbol=LUNAUSDT"
@@ -20,12 +21,14 @@ password = ""
         # https://currencylayer.com/product
         currencylayer = "https://api.currencylayer.com/live?access_key="
 
-        [APIs.sdr]
-        imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
+#        [APIs.sdr]
+#        imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
         [APIs.band]
-        active = true # true/false
+        active = true
         band = "https://terra-lcd.bandchain.org"
 
 [Options]
-interval = 200
+        [Options.Interval]
+        luna = 5
+        stables = 200

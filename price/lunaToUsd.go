@@ -27,7 +27,7 @@ func (ps *PriceService) lunaToUsd(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(cfg.Config.Options.Interval * time.Second)
+				time.Sleep(cfg.Config.Options.Interval.Luna * time.Second)
 			}()
 
 			// resp, err := http.Get("https://api.binance.com/api/v3/ticker/price?symbol=LUNAUSDT")

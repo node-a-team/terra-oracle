@@ -26,7 +26,7 @@ type APILayerResponse struct {
 }
 
 var (
-	stables = []string{"XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"}
+	stables = []string{"XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD", "THB"}
 )
 
 func (ps *PriceService) stablesToUsd(logger log.Logger) {
@@ -37,7 +37,7 @@ func (ps *PriceService) stablesToUsd(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(cfg.Config.Options.Interval * time.Second)
+				time.Sleep(cfg.Config.Options.Interval.Stables * time.Second)
 			}()
 
 			// resp, err := http.Get("https://api.currencylayer.com/live?access_key=")

@@ -22,7 +22,7 @@ func (ps *PriceService) sdrToUsd(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(cfg.Config.Options.Interval * time.Second)
+				time.Sleep(cfg.Config.Options.Interval.Stables * time.Second)
 			}()
 
 			//			resp, err := http.Get("https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y")

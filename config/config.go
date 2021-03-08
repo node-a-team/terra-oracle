@@ -30,6 +30,7 @@ type configType struct {
 		Luna struct {
 			Krw struct {
 				Coinone string `json:"coinone"`
+				Bithumb string `json:"bithumb"`
 			}
 			Usd struct {
 				Binance string `json:"binance"`
@@ -50,7 +51,10 @@ type configType struct {
 		}
 	}
 	Options struct {
-		Interval time.Duration `json:"interval"`
+		Interval struct {
+			Luna	time.Duration `json:"luna"`
+			Stables	time.Duration `json:"stables"`
+		}
 	}
 }
 

@@ -42,7 +42,7 @@ func (ps *PriceService) fxsToUsd(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(cfg.Config.Options.Interval * time.Second)
+				time.Sleep(cfg.Config.Options.Interval.Luna * time.Second)
 			}()
 
 			req, err := http.NewRequest(

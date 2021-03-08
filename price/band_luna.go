@@ -118,7 +118,7 @@ func (ps *PriceService) bandLunaToKrw(logger log.Logger) {
 					logger.Error("Unknown error", r)
 				}
 
-				time.Sleep(cfg.Config.Options.Interval * time.Second)
+				time.Sleep(cfg.Config.Options.Interval.Luna * time.Second)
 			}()
 
 			resp, err := http.Get(cfg.Config.APIs.Band.Band + LUNA_PRICE_END_POINT)
