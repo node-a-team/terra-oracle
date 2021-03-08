@@ -4,6 +4,11 @@ By default, Tendermint waits 10 seconds for the transaction to be committed. But
 And make sure that you include ukrw in minimum gas price in terrad.toml to let users pay the fee by ukrw.  
 
 ## Changelog
+#### v0.0.5-alpha.6
+Add vote list for Proposal#38: `{THB}`
+Configuration change in `config.toml`
+
+
 #### v0.0.5-alpha.5
 Patch terra oracle to use data from band guanyu mainnet(by <strong>@Benzbeeb</strong>)  
 Make sure the band's API is `https://terra-lcd.bandchain.org` in `config.toml`.
