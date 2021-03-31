@@ -4,6 +4,9 @@ By default, Tendermint waits 10 seconds for the transaction to be committed. But
 And make sure that you include ukrw in minimum gas price in terrad.toml to let users pay the fee by ukrw.  
 
 ## Changelog
+#### v0.0.5-alpha.7
+Changed the price base of KRW from Bithumb to Coinone  
+
 #### v0.0.5-alpha.6
 Add vote list for Proposal#38: `{THB}`  
 Configuration change in `config.toml`
@@ -74,7 +77,7 @@ cd $HOME/terra-oracle
 go install ./cmd/terra-oracle
 
 terra-oracle version
-## v0.0.5-alpha.5
+## v0.0.5-alpha.7
 ```
 
 ## Set your basic config for cli.
@@ -91,17 +94,17 @@ terracli config node tcp://localhost:26657
 ## Set your feeder.
 
 ```bash
-terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --fees 356100ukrw 
+terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_account} --fees 35610000ukrw 
 
 // ex)
-terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --fees 356100ukrw 
+terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --fees 35610000ukrw 
 ```
 
 ## Start terra-oracle service.
   
 ```sh
-terra-oracle service --from={name_of_feeder} --fees=356100ukrw --gas=200000 --broadcast-mode=block --config={path_to_config.toml} --vote-mode aggregate
+terra-oracle service --from={name_of_feeder} --broadcast-mode=block --config={path_to_config.toml} --vote-mode aggregate
 
 // ex)
-terra-oracle service --from=ORACLE --fees=356100ukrw --gas=200000 --broadcast-mode=block --config=$HOME/terra-oracle --vote-mode aggregate
+terra-oracle service --from=ORACLE --broadcast-mode=block --config=$HOME/terra-oracle --vote-mode aggregate
 ```
