@@ -38,8 +38,8 @@ type Ticker_bithumb struct {
 
 func (ps *PriceService) lunaToKrw(logger log.Logger) {
 
-//	coinone(ps, logger)
-	bithumb(ps, logger)
+	coinone(ps, logger)
+//	bithumb(ps, logger)
 }
 
 func bithumb(ps *PriceService, logger log.Logger) {
