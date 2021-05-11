@@ -5,7 +5,7 @@ And make sure that you include ukrw in minimum gas price in terrad.toml to let u
 
 ## Changelog
 #### v0.0.5-alpha.8-a
-Create `terra-oracle_starter` in `$GOPATH`, create `/etc/systemd/system/terra-oracle.service`
+Create `terra-oracle_starter` in `$GOPATH`, create `/etc/systemd/system/terra-oracle.service`  
 Restart oracle when `reveal period` or `failed to execute message` occurs in rawlog  
 Fix typos(Thanks <strong>@petes-fan-club</strong>)  
 
@@ -81,7 +81,7 @@ cd $HOME/terra-oracle
 go install ./cmd/terra-oracle
 
 terra-oracle version
-## v0.0.5-alpha.7
+## v0.0.5-alpha.8-a
 ```
 
 ## Set your basic config for cli.
@@ -104,11 +104,25 @@ terracli tx oracle set-feeder {address_of_feeder} --from={name_of_validator_acco
 terracli tx oracle set-feeder terra1uq0z26lahq7ekavpf9cgl8ypxnj7ducat60a4w --from=VALIDATOR --fees 35610000ukrw 
 ```
 
-## Start terra-oracle service.
+## Start terra-oracle.
   
 ```sh
 terra-oracle service --from={name_of_feeder} --broadcast-mode=block --config={path_to_config.toml} --vote-mode aggregate
 
 // ex)
 terra-oracle service --from=ORACLE --broadcast-mode=block --config=$HOME/terra-oracle --vote-mode aggregate
+```
+
+## Start with Systemd service.
+(You must enter the `name` and `password` in the `[Feeder]` part of `config.toml`)  
+```sh
+terra-oracle register-systemd --from={name_of_feeder} --config={path_to_config.toml}
+
+// ex)
+terra-oracle register-systemd --from=ORACLE --config=$HOME/terra-oracle
+sudo systemctl start terra-oracle.service
+
+// log)
+journalctl -f -u terra-oracle.service
+
 ```
