@@ -114,7 +114,7 @@ func (os *OracleService) txRoutine() {
 
 				return
 			}
-			latestVoteHeight = latestHeignt
+			latestVoteHeight = latestHeight
 			os.Logger.Info(fmt.Sprintf("Tick: %d", tick))
 
 			abort, err := os.calculatePrice()
