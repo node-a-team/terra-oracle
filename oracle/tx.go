@@ -107,9 +107,9 @@ func (os *OracleService) txRoutine() {
 				os.Logger.Error("Fail to fetch status", err.Error())
 				return
 			}
-			latestHeignt := status.SyncInfo.LatestBlockHeight
+			latestHeight := status.SyncInfo.LatestBlockHeight
 
-			var tick int64 = latestHeignt / VotePeriod
+			var tick int64 = latestHeight / VotePeriod
 			if tick <= latestVoteHeight/VotePeriod {
 
 				return
