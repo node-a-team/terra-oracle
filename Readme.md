@@ -114,7 +114,8 @@ terra-oracle service --from=ORACLE --broadcast-mode=block --config=$HOME/terra-o
 ```
 
 ## Start with Systemd service.
-(You must enter the `name` and `password` in the `[Feeder]` part of `config.toml`)  
+1. You must enter the `name` and `password` in the `[Feeder]` part of `config.toml`  
+2. You need to install `expect`: `sudo apt install expect -y`  
 ```sh
 terra-oracle register-systemd --from={name_of_feeder} --config={path_to_config.toml}
 
