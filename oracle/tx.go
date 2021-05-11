@@ -146,7 +146,7 @@ func (os *OracleService) txRoutine() {
 			}
 
 			// reveal period of submitted vote do not match with registered prevote
-			if strings.Contains(res.RawLog, "reveal period") || strings.Contains(res.RawLog, "failed to excute message") {
+			if strings.Contains(res.RawLog, "reveal period") || strings.Contains(res.RawLog, "failed to execute message") {
 				os.prevoteInited = false
 			}
 
@@ -305,7 +305,7 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 //              		return false, errors.New("Can't get luna/krw")
 		                fmt.Println("Can't get luna/krw")
 		        }
-		        os.Logger.Info(fmt.Sprintf("luna/krw: %s", lunaToKrw.String()))
+			os.Logger.Info(fmt.Sprintf("\033[33m1 luna\033[0m=\033[33m%s %s\033[0m", lunaToKrw.String()[0:10], d))
 			os.lunaPrices[d] = lunaToKrw
 
 		case "usd":
@@ -313,7 +313,7 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 //              		return false, errors.New("Can't get luna/usd")
 		                fmt.Println("Can't get luna/usd")
 		        }
-		        os.Logger.Info(fmt.Sprintf("luna/usd: %s", lunaToUsd.String()))
+			os.Logger.Info(fmt.Sprintf("\033[33m1 luna\033[0m=\033[33m%s %s\033[0m", lunaToUsd.String()[0:10], d))
 		        os.lunaPrices[d] = lunaToUsd
 
 		default:
@@ -325,10 +325,7 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 			lunaToCoinAmount := lunaToUsd.Amount.Quo(coinToUsd.Amount)
 			lunaToCoin := sdk.NewDecCoinFromDec(d, lunaToCoinAmount)
 
-			os.Logger.Info(fmt.Sprintf("%s/usd: %s", d, coinToUsd.String()))
-			os.Logger.Info(fmt.Sprintf("luna/%s: %s", d, lunaToCoin.String()))
-
-
+			os.Logger.Info(fmt.Sprintf("\033[33m1 luna\033[0m=\033[33m%s %s\033[0m", lunaToCoin.String()[0:10], d))
 			os.lunaPrices[d] = lunaToCoin
 		}
 	}

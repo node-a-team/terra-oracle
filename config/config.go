@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -14,16 +15,17 @@ const (
 )
 
 var (
-	Config configType
+	Config ConfigType
 )
 
-type configType struct {
+type ConfigType struct {
 	Title string `json:"title"`
 
 	Validator struct {
 		OperatorAddr string `json:"operatorAddr"`
 	}
 	Feeder struct {
+		Name string `json:"name"`
 		Password string `json:"password"`
 	}
 	APIs struct {
@@ -63,10 +65,11 @@ func Init() {
 	Config = readConfig()
 }
 
-func readConfig() configType {
+func readConfig() ConfigType {
 
-	var config configType
+	var config ConfigType
 
+	fmt.Println("ConfigPath: ", ConfigPath)
 	path := viper.GetString(ConfigPath) + "/config.toml"
 
 	if _, err := toml.DecodeFile(path, &config); err != nil {

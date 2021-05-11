@@ -31,7 +31,7 @@ import (
 )
 
 var (
-	version = "v0.0.5-alpha.7"
+	version = "v0.0.5-alpha.8-a"
 	logger = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 )
 
@@ -60,10 +60,12 @@ func main() {
 		return initConfig(rootCmd)
 	}
 
+
 	// Construct Root Command
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		svcCmd(cdc),
+		registerSystemdCmd(cfg.Config),
 		versionCmd(),
 		flags.LineBreak,
 		keys.Commands(),

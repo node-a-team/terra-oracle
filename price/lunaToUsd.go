@@ -20,11 +20,15 @@ type BinancePrice struct {
 }
 
 func (ps *PriceService) lunaToUsd(logger log.Logger) {
+
 	for {
 		func() {
 			defer func() {
 				if r := recover(); r != nil {
 					logger.Error("Unknown error", r)
+
+					// Abstain
+					abstain(ps, logger)
 				}
 
 				time.Sleep(cfg.Config.Options.Interval.Luna * time.Second)
