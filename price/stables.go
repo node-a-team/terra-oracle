@@ -26,7 +26,7 @@ type APILayerResponse struct {
 }
 
 var (
-	stables = []string{"XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD", "THB"}
+	stables = []string{"XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD", "THB", "SEK"}
 )
 
 func (ps *PriceService) stablesToUsd(logger log.Logger) {
