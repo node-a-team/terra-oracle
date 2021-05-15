@@ -6,6 +6,7 @@ title = "TOML Document"
 operatorAddr = "terravaloper~"
 
 [Feeder]
+name= ""
 password = ""
 
 [APIs]
