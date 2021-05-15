@@ -38,7 +38,7 @@ echo '#!/usr/bin/expect -f
 
 set timeout -1
 
-` +"spawn " +GOPATH +"/bin/terra-oracle service --from=J --broadcast-mode=block --config=" +HOME +" --vote-mode aggregate" +`
+` +"spawn " +GOPATH +"/bin/terra-oracle service --from=" +FeederName +" --broadcast-mode=block --config=" +HOME +" --vote-mode aggregate" +`
 
 expect {
   "Enter keyring passphrase:" {
