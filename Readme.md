@@ -5,7 +5,7 @@ And make sure that you include ukrw in minimum gas price in terrad.toml to let u
 
 ## Changelog
 #### v0.0.5-alpha.9
-Add vote list for Proposal#38: `{SEK}`  
+Add vote list for Proposal#78: `{SEK}`(by <strong>@hanjukim</strong>)    
 
 #### v0.0.5-alpha.8-a
 Create `terra-oracle_starter` in `$GOPATH`, create `/etc/systemd/system/terra-oracle.service`  
@@ -16,7 +16,7 @@ Fix typos(Thanks <strong>@petes-fan-club</strong>)
 Changed the price base of KRW from Bithumb to Coinone  
 
 #### v0.0.5-alpha.6
-Add vote list for Proposal#38: `{THB}`  
+Add vote list for Proposal#38: `{THB}`   
 Configuration change in `config.toml`
 
 #### v0.0.5-alpha.5
