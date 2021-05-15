@@ -35,7 +35,7 @@ var (
 	voteMode               string
 	salt, exchangeRatesStr = []string{"1234", ""}, []string{"", ""}
 
-	denoms = []string{"krw", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud", "sdr", "thb"}
+	denoms = []string{"krw", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud", "sdr", "thb", "sek"}
 )
 
 func (os *OracleService) init() error {
@@ -87,7 +87,7 @@ func (os *OracleService) txRoutine() {
 	var voteMsgs []sdk.Msg
 	var latestVoteHeight int64 = 0
 
-//	denoms := []string{"krw", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud", "sdr"}
+	//	denoms := []string{"krw", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud", "sdr"}
 
 	for {
 		func() {
@@ -302,24 +302,24 @@ func (os *OracleService) calculatePrice() (abort bool, err error) {
 			lunaToKrw := os.ps.GetPrice("luna/krw")
 
 			if lunaToKrw.Denom != "krw" {
-//              		return false, errors.New("Can't get luna/krw")
-		                fmt.Println("Can't get luna/krw")
-		        }
+				//              		return false, errors.New("Can't get luna/krw")
+				fmt.Println("Can't get luna/krw")
+			}
 			os.Logger.Info(fmt.Sprintf("\033[33m1 luna\033[0m=\033[33m%s %s\033[0m", lunaToKrw.String()[0:10], d))
 			os.lunaPrices[d] = lunaToKrw
 
 		case "usd":
-		        if lunaToUsd.Denom != "usd" {
-//              		return false, errors.New("Can't get luna/usd")
-		                fmt.Println("Can't get luna/usd")
-		        }
+			if lunaToUsd.Denom != "usd" {
+				//              		return false, errors.New("Can't get luna/usd")
+				fmt.Println("Can't get luna/usd")
+			}
 			os.Logger.Info(fmt.Sprintf("\033[33m1 luna\033[0m=\033[33m%s %s\033[0m", lunaToUsd.String()[0:10], d))
-		        os.lunaPrices[d] = lunaToUsd
+			os.lunaPrices[d] = lunaToUsd
 
 		default:
-			coinToUsd := os.ps.GetPrice(d +"/usd")
+			coinToUsd := os.ps.GetPrice(d + "/usd")
 			if coinToUsd.Denom != "usd" {
-//				return false, errors.New("Can't get " +d +"/usd")
+				//				return false, errors.New("Can't get " +d +"/usd")
 			}
 
 			lunaToCoinAmount := lunaToUsd.Amount.Quo(coinToUsd.Amount)
