@@ -4,11 +4,12 @@ By default, Tendermint waits 10 seconds for the transaction to be committed. But
 And make sure that you include ukrw in minimum gas price in terrad.toml to let users pay the fee by ukrw.  
 
 ## Changelog
-#### v0.0.5-alpha.9
+#### v0.0.5-alpha.9-b
 Add vote list for Proposal#78: `{SEK}`(by <strong>@hanjukim</strong>)    
+To use the Systemd service, you need to enter the `name` and `password` in the **[Feeder]** part of `config.toml`  
 
 #### v0.0.5-alpha.8-a
-Create `terra-oracle_starter` in `$GOPATH`, create `/etc/systemd/system/terra-oracle.service`  
+Running `terra-oracle register-systemd` creates `terra-oracle_starter` in `$GOPATH` and creates `/etc/systemd/system/terra-oracle.service`   
 Restart oracle when `reveal period` or `failed to execute message` occurs in rawlog  
 Fix typos(Thanks <strong>@petes-fan-club</strong>)  
 
