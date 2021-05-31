@@ -35,7 +35,7 @@ var (
 	voteMode               string
 	salt, exchangeRatesStr = []string{"1234", ""}, []string{"", ""}
 
-	denoms = []string{"krw", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud", "sdr", "thb", "sek"}
+	denoms = []string{"krw", "usd", "eur", "mnt", "cny", "jpy", "gbp", "inr", "cad", "chf", "hkd", "sgd", "aud", "sdr", "thb", "sek", "dkk", "nok"}
 )
 
 func (os *OracleService) init() error {
