@@ -30,28 +30,9 @@ type IBCChannel struct {
 	ChannelId string `json:"channel_id"`
 }
 
-type Request struct {
-	OracleScriptID      uint64        `json:"oracle_script_id,string"`
-	Calldata            []byte        `json:"calldata,string"`
-	RequestedValidators []string      `json:"requested_validators"`
-	MinCount            uint64        `json:"min_count,string"`
-	RequestHeight       uint64        `json:"request_height,string"`
-	RequestTime         int64         `json:"request_time,string"`
-	ClientID            string        `json:"client_id"`
-	RawRequests         []RawRequests `json:"raw_requests"`
-	IBCChannel          *IBCChannel   `json:"ibc_channel"`
-	ExecuteGas          uint64        `json:"executeGas,string"`
-}
-
 type RawReports struct {
 	ExternalID uint64 `json:"external_id,string"`
 	Data       string `json:"data"`
-}
-
-type Reports struct {
-	Validator       string       `json:"validator"`
-	InBeforeResolve bool         `json:"in_before_resolve"`
-	RawReports      []RawReports `json:"raw_reports"`
 }
 
 type RequestPacketData struct {
@@ -87,9 +68,7 @@ type PacketResult struct {
 }
 
 type BandResult struct {
-	Request Request      `json:"request"`
-	Reports []Reports    `json:"reports"`
-	Result  PacketResult `json:"result"`
+	Result PacketResult `json:"result"`
 }
 
 type LunaPriceCallData struct {
