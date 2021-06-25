@@ -25,11 +25,6 @@ type RawRequests struct {
 	Calldata     []byte `json:"calldata,string"`
 }
 
-type IBCChannel struct {
-	PortId    string `json:"port_id"`
-	ChannelId string `json:"channel_id"`
-}
-
 type RawReports struct {
 	ExternalID uint64 `json:"external_id,string"`
 	Data       string `json:"data"`
