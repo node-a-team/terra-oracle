@@ -26,10 +26,11 @@ password = ""
 #        imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
         [APIs.band]
-        active = false
-        band = "https://terra-lcd.bandchain.org"
+        active = true
+        band = "https://terra-lcd-poa.bandchain.org"
 
 [Options]
         [Options.Interval]
         luna = 5
         stables = 200
+

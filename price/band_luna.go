@@ -16,8 +16,7 @@ import (
 )
 
 type BandResponse struct {
-	Height int64      `json:"height,string"`
-	Result BandResult `json:"result"`
+	Request BandResult `json:"request"`
 }
 
 type RawRequests struct {
@@ -26,15 +25,22 @@ type RawRequests struct {
 	Calldata     []byte `json:"calldata,string"`
 }
 
+type IBCChannel struct {
+	PortId    string `json:"port_id"`
+	ChannelId string `json:"channel_id"`
+}
+
 type Request struct {
 	OracleScriptID      uint64        `json:"oracle_script_id,string"`
 	Calldata            []byte        `json:"calldata,string"`
 	RequestedValidators []string      `json:"requested_validators"`
 	MinCount            uint64        `json:"min_count,string"`
 	RequestHeight       uint64        `json:"request_height,string"`
-	RequestTime         time.Time     `json:"request_time"`
+	RequestTime         int64         `json:"request_time,string"`
 	ClientID            string        `json:"client_id"`
 	RawRequests         []RawRequests `json:"raw_requests"`
+	IBCChannel          *IBCChannel   `json:"ibc_channel"`
+	ExecuteGas          uint64        `json:"executeGas,string"`
 }
 
 type RawReports struct {
@@ -66,15 +72,24 @@ type ResponsePacketData struct {
 	Result        []byte `json:"result,string"`
 }
 
-type Packet struct {
-	RequestPacketData  RequestPacketData  `json:"request_packet_data"`
-	ResponsePacketData ResponsePacketData `json:"response_packet_data"`
+type PacketResult struct {
+	ClientID       string `json:"client_id"`
+	OracleScriptID int64  `json:"oracle_script_id,string"`
+	Calldata       []byte `json:"calldata"`
+	AskCount       uint64 `json:"ask_count,string"`
+	MinCount       uint64 `json:"min_count,string"`
+	RequestID      int64  `json:"request_id,string"`
+	AnsCount       uint64 `json:"ans_count,string"`
+	RequestTime    int64  `json:"request_time,string"`
+	ResolveTime    int64  `json:"resolve_time,string"`
+	ResolveStatus  string `json:"resolve_status"`
+	Result         []byte `json:"result,string"`
 }
 
 type BandResult struct {
-	Request Request   `json:"request"`
-	Reports []Reports `json:"reports"`
-	Result  Packet    `json:"result"`
+	Request Request      `json:"request"`
+	Reports []Reports    `json:"reports"`
+	Result  PacketResult `json:"result"`
 }
 
 type LunaPriceCallData struct {
@@ -102,7 +117,7 @@ func (lpcd *LunaPriceCallData) toBytes() []byte {
 var (
 	MULTIPLIER           = uint64(1000000000)
 	LUNA_PRICE_CALLDATA  = LunaPriceCallData{Multiplier: MULTIPLIER}
-	LUNA_PRICE_END_POINT = fmt.Sprintf("/oracle/request_search?oid=13&calldata=%x&min_count=10&ask_count=16", LUNA_PRICE_CALLDATA.toBytes())
+	LUNA_PRICE_END_POINT = fmt.Sprintf("/oracle/v1/request_search?oid=13&calldata=%x&min_count=3&ask_count=4", LUNA_PRICE_CALLDATA.toBytes())
 )
 
 func (ps *PriceService) bandLunaToKrw(logger log.Logger) {
@@ -142,8 +157,7 @@ func (ps *PriceService) bandLunaToKrw(logger log.Logger) {
 			}
 
 			var lp LunaPrice
-			Decode(br.Result.Result.ResponsePacketData.Result, &lp)
-
+			Decode(br.Request.Result.Result, &lp)
 			// Find median
 			prices := []float64{}
 			for _, order := range lp.OrderBooks[:4] {
@@ -159,7 +173,7 @@ func (ps *PriceService) bandLunaToKrw(logger log.Logger) {
 			}
 
 			price := sdk.NewDecCoinFromDec("krw", decAmount)
-			timestamp := int64(br.Result.Result.ResponsePacketData.ResolveTime)
+			timestamp := int64(br.Request.Result.ResolveTime)
 
 			logger.Info(fmt.Sprintf("Recent luna/krw: %s, timestamp: %d", price, timestamp))
 
