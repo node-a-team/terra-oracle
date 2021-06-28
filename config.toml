@@ -26,7 +26,7 @@ password = ""
 #        imf = "https://www.imf.org/external/np/fin/data/rms_five.aspx?tsvflag=Y"
 
         [APIs.band]
-        active = true
+        active = false
         band = "https://terra-lcd-poa.bandchain.org"
 
 [Options]
