@@ -1,7 +1,6 @@
 package price
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -17,8 +16,7 @@ import (
 )
 
 type FxResponse struct {
-	Height string   `json:"height"`
-	Result []Result `json:"result"`
+	Result []Result `json:"price_results"`
 }
 
 type Result struct {
@@ -46,9 +44,9 @@ func (ps *PriceService) fxsToUsd(logger log.Logger) {
 			}()
 
 			req, err := http.NewRequest(
-				"POST",
-				cfg.Config.APIs.Band.Band+"/oracle/request_prices",
-				bytes.NewBuffer([]byte(`{"symbols":["LUNA", "XDR", "MNT", "EUR", "CNY", "JPY", "GBP", "INR", "CAD", "CHF", "HKD", "SGD", "AUD"],"min_count":10,"ask_count":16}`)),
+				"GET",
+				cfg.Config.APIs.Band.Band+"/oracle/v1/request_prices?symbols=LUNA&symbols=XDR&symbols=MNT&symbols=EUR&symbols=CNY&symbols=JPY&symbols=GBP&symbols=INR&symbols=CAD&symbols=CHF&symbols=HKD&symbols=SGD&symbols=AUD&min_count=3&ask_count=4",
+				nil,
 			)
 			req.Header.Set("Content-Type", "application/json")
 
